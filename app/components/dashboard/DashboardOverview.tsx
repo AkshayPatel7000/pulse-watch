@@ -1,3 +1,6 @@
+"use client";
+import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import { Service, ServiceStatus, StatusEvent } from "../../lib/types";
 import {
   Card,
@@ -23,14 +26,31 @@ import {
 interface DashboardOverviewProps {
   services: Service[];
   recentEvents: StatusEvent[];
-  onServiceClick: (serviceId: string) => void;
 }
 
 export function DashboardOverview({
   services,
   recentEvents,
-  onServiceClick,
 }: DashboardOverviewProps) {
+  const router = useRouter();
+  const [now, setNow] = useState(0);
+
+  useEffect(() => {
+    // Update time asynchronously to avoid cascading render warning
+    const timeout = setTimeout(() => {
+      setNow(Date.now());
+    }, 0);
+
+    const interval = setInterval(() => {
+      setNow(Date.now());
+    }, 60000);
+
+    return () => {
+      clearTimeout(timeout);
+      clearInterval(interval);
+    };
+  }, []);
+
   const getOverallStatus = (services: Service[]): ServiceStatus => {
     const downCount = services.filter((s) => s.currentStatus === "down").length;
     const degradedCount = services.filter(
@@ -169,7 +189,7 @@ export function DashboardOverview({
               <div
                 key={service.id}
                 className="flex items-center justify-between p-4 rounded-lg border bg-white hover:bg-gray-50 cursor-pointer transition-colors"
-                onClick={() => onServiceClick(service.id)}
+                onClick={() => router.push(`/services/${service.id}`)}
               >
                 <div className="flex items-center gap-4 flex-1">
                   {getStatusIcon(service.currentStatus)}
@@ -191,7 +211,10 @@ export function DashboardOverview({
                       {getStatusLabel(service.currentStatus)}
                     </p>
                     <p className="text-xs text-gray-500">
-                      Checked {formatRelativeTime(service.lastCheckedAt)}
+                      Checked{" "}
+                      {now > 0
+                        ? formatRelativeTime(service.lastCheckedAt, now)
+                        : "..."}
                     </p>
                   </div>
                 </div>
@@ -213,7 +236,10 @@ export function DashboardOverview({
           <CardContent>
             <div className="space-y-3">
               {recentEvents.map((event) => {
-                const service = services.find((s) => s.id === event.serviceId);
+                const service = services.find(
+                  (s: Service) =>
+                    s.id === event.serviceId || s._id === event.serviceId,
+                );
                 if (!service) return null;
 
                 return (
@@ -244,7 +270,9 @@ export function DashboardOverview({
                         )}
                     </div>
                     <span className="text-xs text-gray-500">
-                      {formatRelativeTime(event.timestamp)}
+                      {now > 0
+                        ? formatRelativeTime(event.timestamp, now)
+                        : "..."}
                     </span>
                   </div>
                 );

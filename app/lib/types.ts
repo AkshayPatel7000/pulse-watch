@@ -1,9 +1,15 @@
-export type ServiceType = 'frontend' | 'backend';
-export type ServiceStatus = 'up' | 'degraded' | 'down';
-export type Region = 'us-east-1' | 'eu-central-1' | 'ap-south-1' | 'ap-northeast-1' | 'ap-southeast-1';
+export type ServiceType = "frontend" | "backend";
+export type ServiceStatus = "up" | "degraded" | "down";
+export type Region =
+  | "us-east-1"
+  | "eu-central-1"
+  | "ap-south-1"
+  | "ap-northeast-1"
+  | "ap-southeast-1";
 
 export interface Service {
   id: string;
+  _id?: string;
   name: string;
   url: string;
   type: ServiceType;

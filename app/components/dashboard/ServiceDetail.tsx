@@ -1,9 +1,5 @@
-import {
-  Service,
-  RegionalHealth,
-  ProbeResult,
-  StatusEvent,
-} from "../../lib/types";
+import { useRouter } from "next/navigation";
+import { Service, ProbeResult, StatusEvent } from "../../lib/types";
 import {
   Card,
   CardContent,
@@ -23,8 +19,6 @@ import {
   Loader2,
 } from "lucide-react";
 import {
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -45,13 +39,30 @@ import { useState, useEffect, useMemo } from "react";
 
 interface ServiceDetailProps {
   service: Service;
-  onBack: () => void;
 }
 
-export function ServiceDetail({ service, onBack }: ServiceDetailProps) {
+export function ServiceDetail({ service }: ServiceDetailProps) {
+  const router = useRouter();
   const [probeResults, setProbeResults] = useState<ProbeResult[]>([]);
   const [statusEvents, setStatusEvents] = useState<StatusEvent[]>([]);
   const [loading, setLoading] = useState(true);
+  const [now, setNow] = useState(0);
+
+  useEffect(() => {
+    // Update time asynchronously to avoid cascading render warning
+    const timeout = setTimeout(() => {
+      setNow(Date.now());
+    }, 0);
+
+    const interval = setInterval(() => {
+      setNow(Date.now());
+    }, 60000);
+
+    return () => {
+      clearTimeout(timeout);
+      clearInterval(interval);
+    };
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -78,15 +89,15 @@ export function ServiceDetail({ service, onBack }: ServiceDetailProps) {
   }, [service.id]);
 
   const uptimeStats = useMemo(() => {
-    const now = Date.now();
+    const calculationNow = now > 0 ? now : service.lastCheckedAt;
     const last24h = probeResults.filter(
-      (r) => r.startedAt > now - 24 * 60 * 60 * 1000,
+      (r) => r.startedAt > calculationNow - 24 * 60 * 60 * 1000,
     );
     const last7d = probeResults.filter(
-      (r) => r.startedAt > now - 7 * 24 * 60 * 60 * 1000,
+      (r) => r.startedAt > calculationNow - 7 * 24 * 60 * 60 * 1000,
     );
     const last30d = probeResults.filter(
-      (r) => r.startedAt > now - 30 * 24 * 60 * 60 * 1000,
+      (r) => r.startedAt > calculationNow - 30 * 24 * 60 * 60 * 1000,
     );
 
     const calcUptime = (results: ProbeResult[]) => {
@@ -106,7 +117,7 @@ export function ServiceDetail({ service, onBack }: ServiceDetailProps) {
       uptime30d: calcUptime(last30d),
       avgResponseTime,
     };
-  }, [probeResults]);
+  }, [probeResults, now, service.lastCheckedAt]);
 
   const regionalHealth = useMemo(() => {
     const regions: (
@@ -131,21 +142,25 @@ export function ServiceDetail({ service, onBack }: ServiceDetailProps) {
         region,
         status: latest ? (latest.success ? "up" : "down") : ("up" as any),
         responseTime: latest ? latest.responseTime : 0,
-        lastChecked: latest ? latest.startedAt : Date.now(),
+        lastChecked: latest
+          ? latest.startedAt
+          : now > 0
+            ? now
+            : service.lastCheckedAt,
       };
     });
-  }, [probeResults]);
+  }, [probeResults, now, service.lastCheckedAt]);
 
-  const last24h = useMemo(() => {
-    const now = Date.now();
+  const last24hResults = useMemo(() => {
+    const calculationNow = now > 0 ? now : service.lastCheckedAt;
     return probeResults
-      .filter((r) => r.startedAt > now - 24 * 60 * 60 * 1000)
+      .filter((r) => r.startedAt > calculationNow - 24 * 60 * 60 * 1000)
       .sort((a, b) => a.startedAt - b.startedAt);
-  }, [probeResults]);
+  }, [probeResults, now, service.lastCheckedAt]);
 
   // Group by timestamp and calculate average response time
   const chartData = useMemo(() => {
-    return last24h.reduce((acc: any[], result: ProbeResult) => {
+    return last24hResults.reduce((acc: any[], result: ProbeResult) => {
       const timestamp =
         Math.floor(result.startedAt / (10 * 60 * 1000)) * 10 * 60 * 1000;
       const existing = acc.find((item: any) => item.timestamp === timestamp);
@@ -169,7 +184,7 @@ export function ServiceDetail({ service, onBack }: ServiceDetailProps) {
 
       return acc;
     }, []);
-  }, [last24h]);
+  }, [last24hResults]);
 
   const getStatusIcon = (status: Service["currentStatus"]) => {
     switch (status) {
@@ -196,7 +211,7 @@ export function ServiceDetail({ service, onBack }: ServiceDetailProps) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="sm" onClick={onBack}>
+          <Button variant="ghost" size="sm" onClick={() => router.back()}>
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back
           </Button>
@@ -214,7 +229,8 @@ export function ServiceDetail({ service, onBack }: ServiceDetailProps) {
             {getStatusLabel(service.currentStatus)}
           </p>
           <p className="text-sm text-gray-500">
-            Last checked {formatRelativeTime(service.lastCheckedAt)}
+            Last checked{" "}
+            {now > 0 ? formatRelativeTime(service.lastCheckedAt, now) : "..."}
           </p>
         </div>
       </div>
@@ -342,7 +358,9 @@ export function ServiceDetail({ service, onBack }: ServiceDetailProps) {
                       {formatResponseTime(region.responseTime)}
                     </p>
                     <p className="text-xs text-gray-500">
-                      {formatRelativeTime(region.lastChecked)}
+                      {now > 0
+                        ? formatRelativeTime(region.lastChecked, now)
+                        : "..."}
                     </p>
                   </div>
                   <Badge
@@ -397,7 +415,7 @@ export function ServiceDetail({ service, onBack }: ServiceDetailProps) {
                       )}
                   </div>
                   <span className="text-sm text-gray-500">
-                    {formatRelativeTime(event.timestamp)}
+                    {now > 0 ? formatRelativeTime(event.timestamp, now) : "..."}
                   </span>
                 </div>
               ))}
