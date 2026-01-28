@@ -9,7 +9,7 @@ export type Region =
 
 export interface Service {
   id: string;
-  _id?: string;
+  _id?: any;
   name: string;
   url: string;
   type: ServiceType;

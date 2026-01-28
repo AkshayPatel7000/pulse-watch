@@ -1,6 +1,11 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { Service, ProbeResult, StatusEvent } from "../../lib/types";
+import {
+  Service,
+  ServiceStatus,
+  ProbeResult,
+  StatusEvent,
+} from "../../lib/types";
 import {
   Card,
   CardContent,
