@@ -16,6 +16,13 @@ export interface Service {
   currentStatus: ServiceStatus;
   lastCheckedAt: number;
   description?: string;
+  notificationSettings?: {
+    emails?: string[];
+    slackWebhook?: string;
+    notifyOnDown?: boolean;
+    notifyOnDegraded?: boolean;
+    notifyOnRecovered?: boolean;
+  };
 }
 
 export interface ProbeResult {

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getDb } from "@/app/lib/mongodb";
 import { performMultiRegionCheck, evaluateStatus } from "@/app/lib/checker";
 import { Service } from "@/app/lib/types";
+import { sendStatusAlert } from "@/app/lib/notifications";
 
 export async function POST(request: Request) {
   const authHeader = request.headers.get("authorization");
@@ -37,6 +38,9 @@ export async function POST(request: Request) {
 
       // Check if status changed
       if (newStatus !== service.currentStatus) {
+        // Send alert
+        await sendStatusAlert(service, service.currentStatus, newStatus);
+
         // Log status event
         await db.collection("status_events").insertOne({
           serviceId: service.id,

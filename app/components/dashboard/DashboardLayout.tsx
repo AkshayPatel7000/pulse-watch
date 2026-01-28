@@ -1,10 +1,10 @@
-import { Activity, BarChart3, Globe, Home } from "lucide-react";
+import { Activity, BarChart3, Globe, Home, Bell } from "lucide-react";
 import Link from "next/link";
 import { Button } from "../ui/button";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
-  currentPage: "overview" | "services" | "settings";
+  currentPage: "overview" | "services" | "settings" | "alerts";
 }
 
 export function DashboardLayout({
@@ -38,6 +38,15 @@ export function DashboardLayout({
                 >
                   <BarChart3 className="w-4 h-4 mr-2" />
                   Services
+                </Button>
+              </Link>
+              <Link href="/dashboard/alerts">
+                <Button
+                  variant={currentPage === "alerts" ? "default" : "ghost"}
+                  size="sm"
+                >
+                  <Bell className="w-4 h-4 mr-2" />
+                  Alerts
                 </Button>
               </Link>
               <Link href="/status" target="_blank">
