@@ -140,7 +140,7 @@ export function AlertsManagement({
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-semibold">Alert Integrations</h2>
-          <p className="text-gray-600 mt-1">
+          <p className="text-muted-foreground mt-1">
             Configure how you want to be notified when services change status
           </p>
         </div>
@@ -172,7 +172,7 @@ export function AlertsManagement({
             <Card
               key={service.id}
               className={
-                hasChanges ? "border-blue-200 ring-1 ring-blue-100" : ""
+                hasChanges ? "border-primary ring-1 ring-primary/20" : ""
               }
             >
               <CardHeader className="pb-4">
@@ -210,7 +210,7 @@ export function AlertsManagement({
                   {/* Channels */}
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                      <div className="flex items-center gap-2 text-sm font-medium text-foreground">
                         <Mail className="w-4 h-4 text-blue-500" />
                         <Label htmlFor={`emails-${service.id}`}>
                           Email Alerts
@@ -252,8 +252,8 @@ export function AlertsManagement({
                   </div>
 
                   {/* Rules */}
-                  <div className="bg-gray-50 p-4 rounded-lg space-y-4">
-                    <p className="text-sm font-semibold text-gray-600 flex items-center gap-2">
+                  <div className="bg-muted p-4 rounded-lg space-y-4">
+                    <p className="text-sm font-semibold text-muted-foreground flex items-center gap-2">
                       <Bell className="w-4 h-4" />
                       Notification Rules
                     </p>
@@ -274,7 +274,7 @@ export function AlertsManagement({
                               e.target.checked,
                             )
                           }
-                          className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                          className="w-4 h-4 text-primary rounded border-input focus:ring-ring"
                         />
                         <Label
                           htmlFor={`down-${service.id}`}
@@ -299,7 +299,7 @@ export function AlertsManagement({
                               e.target.checked,
                             )
                           }
-                          className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                          className="w-4 h-4 text-primary rounded border-input focus:ring-ring"
                         />
                         <Label
                           htmlFor={`degraded-${service.id}`}
@@ -324,7 +324,7 @@ export function AlertsManagement({
                               e.target.checked,
                             )
                           }
-                          className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                          className="w-4 h-4 text-primary rounded border-input focus:ring-ring"
                         />
                         <Label
                           htmlFor={`recovered-${service.id}`}

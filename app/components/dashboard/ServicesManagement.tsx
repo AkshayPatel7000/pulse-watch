@@ -93,7 +93,7 @@ export function ServicesManagement({
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-semibold">Service Management</h2>
-          <p className="text-gray-600 mt-1">
+          <p className="text-muted-foreground mt-1">
             Configure and monitor your services
           </p>
         </div>
@@ -127,7 +127,7 @@ export function ServicesManagement({
               services.map((service) => (
                 <div
                   key={service.id}
-                  className="flex items-center gap-4 p-4 rounded-lg border bg-white hover:bg-gray-50 transition-colors"
+                  className="flex items-center gap-4 p-4 rounded-lg border bg-card hover:bg-muted/50 transition-colors"
                 >
                   {getStatusIcon(service.currentStatus)}
 
@@ -143,13 +143,15 @@ export function ServicesManagement({
                         {getStatusLabel(service.currentStatus)}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-600">{service.url}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {service.url}
+                    </p>
                     {service.description && (
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-muted-foreground mt-1">
                         {service.description}
                       </p>
                     )}
-                    <p className="text-xs text-gray-400 mt-1">
+                    <p className="text-xs text-muted-foreground/60 mt-1">
                       Last checked{" "}
                       {now > 0
                         ? formatRelativeTime(service.lastCheckedAt, now)

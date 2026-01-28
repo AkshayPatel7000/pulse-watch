@@ -93,15 +93,15 @@ export function PublicStatusPage({
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200">
+      <header className="bg-card border-b border-border">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center gap-3">
             <Activity className="w-8 h-8 text-blue-600" />
             <div>
               <h1 className="text-2xl font-semibold">System Status</h1>
-              <p className="text-sm text-gray-600 mt-1">
+              <p className="text-sm text-muted-foreground mt-1">
                 Last updated{" "}
                 {lastUpdate > 0
                   ? formatRelativeTime(lastUpdate, now)
@@ -120,10 +120,10 @@ export function PublicStatusPage({
           <Card
             className={
               overallStatus === "up"
-                ? "border-green-300 bg-green-50"
+                ? "border-green-300 dark:border-green-800 bg-green-50 dark:bg-green-950/20"
                 : overallStatus === "degraded"
-                  ? "border-yellow-300 bg-yellow-50"
-                  : "border-red-300 bg-red-50"
+                  ? "border-yellow-300 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-950/20"
+                  : "border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-950/20"
             }
           >
             <CardHeader>
@@ -133,10 +133,10 @@ export function PublicStatusPage({
                   <CardTitle className="text-xl mb-2">
                     {getOverallMessage()}
                   </CardTitle>
-                  <p className="text-sm text-gray-700">
+                  <p className="text-sm text-muted-foreground">
                     {getOverallDescription()}
                   </p>
-                  <div className="flex items-center gap-2 mt-4 text-xs text-gray-600">
+                  <div className="flex items-center gap-2 mt-4 text-xs text-muted-foreground/80">
                     <Globe className="w-3 h-3" />
                     <span>Monitored from 5 regions globally</span>
                     <span className="mx-2">•</span>
@@ -175,7 +175,7 @@ export function PublicStatusPage({
                               </Badge>
                             </div>
                             {service.description && (
-                              <p className="text-sm text-gray-600">
+                              <p className="text-sm text-muted-foreground">
                                 {service.description}
                               </p>
                             )}
@@ -183,7 +183,7 @@ export function PublicStatusPage({
                         </div>
                         <div className="flex items-center gap-6 text-right">
                           <div>
-                            <p className="text-xs text-gray-500 mb-1">
+                            <p className="text-xs text-muted-foreground mb-1">
                               30d Uptime
                             </p>
                             <p className="text-sm font-semibold text-green-600">
@@ -196,7 +196,7 @@ export function PublicStatusPage({
                             >
                               {getStatusLabel(service.currentStatus)}
                             </p>
-                            <p className="text-xs text-gray-500 mt-1">
+                            <p className="text-xs text-muted-foreground/70 mt-1">
                               {now > 0
                                 ? formatRelativeTime(service.lastCheckedAt, now)
                                 : "..."}
@@ -256,7 +256,7 @@ export function PublicStatusPage({
                                 <p className="font-medium mb-1">
                                   {service.name}
                                 </p>
-                                <p className="text-sm text-gray-600">
+                                <p className="text-sm text-muted-foreground">
                                   Status changed from{" "}
                                   <span
                                     className={getStatusColor(
@@ -274,13 +274,13 @@ export function PublicStatusPage({
                                 </p>
                                 {event.affectedRegions &&
                                   event.affectedRegions.length > 0 && (
-                                    <p className="text-xs text-gray-500 mt-2">
+                                    <p className="text-xs text-muted-foreground/60 mt-2">
                                       Affected regions:{" "}
                                       {event.affectedRegions.join(", ")}
                                     </p>
                                   )}
                               </div>
-                              <span className="text-sm text-gray-500 whitespace-nowrap">
+                              <span className="text-sm text-muted-foreground/60 whitespace-nowrap">
                                 {now > 0
                                   ? formatRelativeTime(event.timestamp, now)
                                   : "..."}
@@ -297,13 +297,13 @@ export function PublicStatusPage({
           )}
 
           {/* Footer Info */}
-          <Card className="bg-blue-50 border-blue-200">
+          <Card className="bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-900/50">
             <CardContent className="p-6">
               <div className="flex items-start gap-3">
                 <Activity className="w-5 h-5 text-blue-600 mt-0.5" />
                 <div>
                   <h3 className="font-medium mb-2">About This Status Page</h3>
-                  <p className="text-sm text-gray-700">
+                  <p className="text-sm text-muted-foreground">
                     This page displays real-time status information for all our
                     services. Our monitoring system checks each endpoint every
                     10 minutes from 5 global regions to ensure accurate

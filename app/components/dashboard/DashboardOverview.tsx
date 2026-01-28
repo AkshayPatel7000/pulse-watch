@@ -85,10 +85,10 @@ export function DashboardOverview({
       <Card
         className={
           overallStatus === "up"
-            ? "border-green-300 bg-green-50"
+            ? "border-green-300 dark:border-green-800 bg-green-50 dark:bg-green-950/20"
             : overallStatus === "degraded"
-              ? "border-yellow-300 bg-yellow-50"
-              : "border-red-300 bg-red-50"
+              ? "border-yellow-300 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-950/20"
+              : "border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-950/20"
         }
       >
         <CardHeader>
@@ -114,7 +114,7 @@ export function DashboardOverview({
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-gray-600">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
               Total Services
             </CardTitle>
           </CardHeader>
@@ -144,7 +144,7 @@ export function DashboardOverview({
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-gray-600">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
               Degraded
             </CardTitle>
           </CardHeader>
@@ -188,7 +188,7 @@ export function DashboardOverview({
             {services.map((service) => (
               <div
                 key={service.id}
-                className="flex items-center justify-between p-4 rounded-lg border bg-white hover:bg-gray-50 cursor-pointer transition-colors"
+                className="flex items-center justify-between p-4 rounded-lg border bg-card hover:bg-muted/50 cursor-pointer transition-colors"
                 onClick={() => router.push(`/services/${service.id}`)}
               >
                 <div className="flex items-center gap-4 flex-1">
@@ -200,7 +200,9 @@ export function DashboardOverview({
                         {service.type}
                       </Badge>
                     </div>
-                    <p className="text-sm text-gray-500 mt-1">{service.url}</p>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {service.url}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
@@ -210,7 +212,7 @@ export function DashboardOverview({
                     >
                       {getStatusLabel(service.currentStatus)}
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-muted-foreground">
                       Checked{" "}
                       {now > 0
                         ? formatRelativeTime(service.lastCheckedAt, now)
@@ -252,7 +254,7 @@ export function DashboardOverview({
                     />
                     <div className="flex-1">
                       <p className="text-sm font-medium">{service.name}</p>
-                      <p className="text-xs text-gray-600 mt-1">
+                      <p className="text-xs text-muted-foreground mt-1">
                         Status changed from{" "}
                         <span className={getStatusColor(event.previousStatus)}>
                           {getStatusLabel(event.previousStatus)}
