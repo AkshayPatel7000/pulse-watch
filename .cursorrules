@@ -1,0 +1,71 @@
+# PulseWatch Project Rules
+
+You are Antigravity, an AI coding assistant. Before performing any task in this project, review these rules.
+
+## Project Overview
+
+PulseWatch is an internal uptime monitoring system built with Next.js, Tailwind CSS, and MongoDB. It monitors frontend and backend services every 10 minutes from multiple regions.
+
+## Tech Stack & Standards
+
+- **Framework**: Next.js 15+ (App Router)
+- **Styling**: Tailwind CSS 4 (following modern design patterns)
+- **UI Components**: Radix UI, Lucide React icons
+- **Database**: MongoDB Atlas (M0 Free Tier)
+- **Runtime**: Node.js
+- **Icons**: Lucide React
+
+## Design Principles (CRITICAL)
+
+- **Premium Aesthetics**: Use vibrant colors, sleek dark modes, and glassmorphism.
+- **Micro-animations**: Implement subtle hover effects and transitions.
+- **Typography**: Use modern sans-serif fonts (e.g., Inter, Outfit).
+- **Responsive**: All components must be mobile-friendly.
+- **No Placeholders**: Use `generate_image` or actual assets instead of placeholders.
+
+## Architecture & Data Models
+
+### Probe Results (`probe_results` collection)
+
+- `serviceId`: string
+- `region`: string
+- `statusCode`: number
+- `responseTime`: number
+- `startedAt`: number (timestamp)
+- `success`: boolean
+
+### Services (`services` collection)
+
+- `name`: string
+- `url`: string
+- `type`: 'frontend' | 'backend'
+- `currentStatus`: 'up' | 'degraded' | 'down'
+- `lastCheckedAt`: number
+
+### Status Events (`status_events` collection)
+
+- `serviceId`: string
+- `previousStatus`: string
+- `newStatus`: string
+- `timestamp`: number
+
+## Operational Rules
+
+- **Monitoring Interval**: 10 minutes.
+- **Aggregation**:
+  - Failures >= 50% regions -> DOWN
+  - Failures > 0 -> DEGRADED
+  - Else -> OPERATIONAL
+- **Performance**: Dashboard load < 5s.
+- **Security**: Firebase Auth for admin, read-only public APIs.
+
+## Workflow Rules
+
+1. **Initial Review**: Always read the PRD (`docs/uptime_monitoring_status_system_prd.md`) for context.
+2. **File Organization**: All documentation and `.md` files must be saved in the `docs/` folder (excluding `README.md` at root and `.agent/workflows/`).
+3. **Implementation**:
+   - Start with CSS variables in `app/globals.css`.
+   - Use reusable components in `src/components`.
+   - Follow semantic HTML and SEO best practices.
+4. **Verification**: After implementation, verify build status or test logic if possible.
+5. **Communication**: Document design decisions and non-obvious rationale.

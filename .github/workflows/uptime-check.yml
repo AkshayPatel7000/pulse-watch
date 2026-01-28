@@ -1,0 +1,15 @@
+name: Uptime Check Cron
+
+on:
+  schedule:
+    - cron: "*/10 * * * *" # Every 10 minutes
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  check-uptime:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Uptime Endpoint
+        run: |
+          curl -X POST "${{ secrets.SITE_URL }}/api/check/run" \
+          -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"

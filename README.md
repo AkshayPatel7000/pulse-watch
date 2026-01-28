@@ -1,24 +1,29 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Backend Setup
 
-## Getting Started
+PulseWatch uses MongoDB for data persistence and Vercel/GitHub Actions for scheduling checks.
 
-First, run the development server:
+### 1. Database Setup
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+1. Create a MongoDB Atlas cluster (M0 Free Tier is sufficient).
+2. Create a database named `pulsewatch`.
+3. Create a `.env.local` file with:
+   ```env
+   MONGODB_URI=your_mongodb_connection_string
+   MONGODB_DB=pulsewatch
+   ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Seeding Data
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+To populate your dashboard with mock data and create initial indexes, send a POST request to:
+`/api/seed`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 3. Scheduling Checks
+
+Set up a cron job (every 10 minutes) to hit the following endpoint:
+`/api/check/run`
+
+- **Vercel**: Add a `vercel.json` with a cron configuration.
+- **GitHub Actions**: Use a scheduled workflow.
 
 ## Learn More
 

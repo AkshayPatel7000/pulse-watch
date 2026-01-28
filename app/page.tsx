@@ -1,12 +1,12 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Service } from "./lib/types";
-import { mockDB } from "./lib/mockData";
+import { Service, StatusEvent } from "./lib/types";
 import { DashboardLayout } from "./components/dashboard/DashboardLayout";
 import { DashboardOverview } from "./components/dashboard/DashboardOverview";
 import { ServicesManagement } from "./components/dashboard/ServicesManagement";
 import { ServiceDetail } from "./components/dashboard/ServiceDetail";
 import { PublicStatusPage } from "./components/status/PublicStatusPage";
+import { Loader2 } from "lucide-react";
 
 type View = "overview" | "services" | "service-detail" | "public-status";
 type DashboardPage = "overview" | "services" | "settings";
@@ -18,31 +18,69 @@ export default function Home() {
     null,
   );
   const [services, setServices] = useState<Service[]>([]);
+  const [recentEvents, setRecentEvents] = useState<StatusEvent[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Load initial services
+  const fetchServices = async () => {
+    try {
+      const response = await fetch("/api/services");
+      const data = await response.json();
+      setServices(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error("Error fetching services:", error);
+    }
+  };
+
+  const fetchSummary = async () => {
+    try {
+      const response = await fetch("/api/status/summary");
+      const data = await response.json();
+      setRecentEvents(data.recentEvents || []);
+    } catch (error) {
+      console.error("Error fetching summary:", error);
+    }
+  };
+
   useEffect(() => {
-    setServices(mockDB.getServices());
+    const init = async () => {
+      setLoading(true);
+      await Promise.all([fetchServices(), fetchSummary()]);
+      setLoading(false);
+    };
+    init();
   }, []);
 
-  // Auto-refresh services every 30 seconds to simulate live updates
+  // Refresh every 60 seconds
   useEffect(() => {
     const interval = setInterval(() => {
-      setServices(mockDB.getServices());
-    }, 30000);
-
+      fetchServices();
+      fetchSummary();
+    }, 60000);
     return () => clearInterval(interval);
   }, []);
 
-  const handleAddService = (
+  const handleAddService = async (
     newService: Omit<Service, "id" | "currentStatus" | "lastCheckedAt">,
   ) => {
-    const added = mockDB.addService(newService);
-    setServices(mockDB.getServices());
+    try {
+      await fetch("/api/services", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newService),
+      });
+      fetchServices();
+    } catch (error) {
+      console.error("Error adding service:", error);
+    }
   };
 
-  const handleDeleteService = (serviceId: string) => {
-    mockDB.deleteService(serviceId);
-    setServices(mockDB.getServices());
+  const handleDeleteService = async (serviceId: string) => {
+    try {
+      await fetch(`/api/services/${serviceId}`, { method: "DELETE" });
+      fetchServices();
+    } catch (error) {
+      console.error("Error deleting service:", error);
+    }
   };
 
   const handleViewService = (serviceId: string) => {
@@ -64,7 +102,6 @@ export default function Home() {
     setSelectedServiceId(null);
   };
 
-  // Check if we're viewing the public status page
   if (currentView === "public-status") {
     return (
       <div>
@@ -81,12 +118,23 @@ export default function Home() {
     );
   }
 
-  // Render dashboard views
+  if (loading) {
+    return (
+      <DashboardLayout currentPage={currentPage} onNavigate={handleNavigate}>
+        <div className="flex flex-col items-center justify-center p-20 space-y-4">
+          <Loader2 className="w-10 h-10 animate-spin text-blue-600" />
+          <p className="text-gray-500 font-medium">Loading Dashboard...</p>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
   return (
     <DashboardLayout currentPage={currentPage} onNavigate={handleNavigate}>
       {currentView === "overview" && (
         <DashboardOverview
           services={services}
+          recentEvents={recentEvents}
           onServiceClick={handleViewService}
         />
       )}
@@ -107,7 +155,6 @@ export default function Home() {
         />
       )}
 
-      {/* Floating action button to view public status page */}
       <div className="fixed bottom-4 right-4">
         <button
           onClick={() => setCurrentView("public-status")}
