@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 import { Providers } from "./Providers";
 
 export const metadata: Metadata = {
-  title: "Pulse Watch | Dynamic Service Monitoring",
+  title: "Pinglyfy | Dynamic Service Monitoring",
   description:
     "Real-time infrastructure monitoring, status pages, and incident alerts for modern dev teams.",
 };

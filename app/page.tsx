@@ -157,7 +157,7 @@ export default function LandingPage() {
               <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-10" />
               <Image
                 src="/landing-mockup.png"
-                alt="Pulse Watch Dashboard Mockup"
+                alt="Pinglyfy Dashboard Mockup"
                 width={1100}
                 height={700}
                 className="w-full h-auto opacity-90 hover:scale-[1.01] transition-transform duration-700"
@@ -174,7 +174,7 @@ export default function LandingPage() {
                 How it works
               </h2>
               <p className="text-gray-400 text-lg">
-                Setting up Pulse Watch is surprisingly simple.
+                Setting up Pinglyfy is surprisingly simple.
               </p>
             </div>
 
@@ -327,10 +327,10 @@ export default function LandingPage() {
         <div className="container mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex items-center gap-2">
             <Activity className="h-6 w-6 text-blue-600" />
-            <span className="font-bold text-xl">Pulse Watch</span>
+            <span className="font-bold text-xl">Pinglyfy</span>
           </div>
           <p className="text-sm text-gray-500">
-            © 2026 Pulse Watch Inc. Built for high-availability.
+            © 2026 Pinglyfy Inc. Built for high-availability.
           </p>
           <div className="flex gap-8">
             <Link

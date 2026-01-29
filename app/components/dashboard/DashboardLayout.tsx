@@ -54,7 +54,7 @@ export function DashboardLayout({
               className="flex items-center gap-3"
             >
               <Activity className="w-8 h-8 text-blue-600" />
-              <h1 className="text-xl font-semibold">Pulse Watch</h1>
+              <h1 className="text-xl font-semibold">Pinglyfy</h1>
             </Link>
             <div className="flex items-center gap-2">
               <Link href={`/${orgName}/dashboard`}>

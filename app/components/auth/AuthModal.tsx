@@ -90,7 +90,7 @@ export function AuthModal({
           <DialogDescription className="text-gray-400">
             {mode === "login"
               ? "Sign in to manage your services"
-              : "Get started with Pulse Watch today"}
+              : "Get started with Pinglyfy today"}
           </DialogDescription>
         </DialogHeader>
 

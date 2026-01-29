@@ -133,7 +133,7 @@ export async function POST(request: Request) {
 
     const finalBaseUrl = process.env.NEXTAUTH_URL;
     const callbackUrl = `${finalBaseUrl}/api/check/run?org=${tenantSlug}`;
-    const jobTitle = `Pulse Watch - ${tenant.name}`;
+    const jobTitle = `Pinglyfy - ${tenant.name}`;
 
     const jobResult = await createCronJob(
       apiKey,

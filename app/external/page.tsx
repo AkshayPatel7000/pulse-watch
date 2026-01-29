@@ -11,7 +11,7 @@ export default function ExternalPlatformsPage() {
       <header className="px-4 lg:px-6 h-16 flex items-center border-b border-border sticky top-0 bg-background/80 backdrop-blur-sm z-50">
         <Link className="flex items-center justify-center gap-2" href="/">
           <Activity className="h-6 w-6 text-blue-600" />
-          <span className="font-bold text-xl">Pulse Watch</span>
+          <span className="font-bold text-xl">Pinglyfy</span>
         </Link>
         <Link href="/" className="ml-auto">
           <Button variant="ghost" size="sm">
@@ -38,7 +38,7 @@ export default function ExternalPlatformsPage() {
       <footer className="w-full py-6 px-4 border-t border-border mt-20">
         <div className="container mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-xs text-muted-foreground">
-            © 2026 Pulse Watch Inc. All rights reserved.
+            © 2026 Pinglyfy Inc. All rights reserved.
           </p>
         </div>
       </footer>
