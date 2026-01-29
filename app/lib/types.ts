@@ -29,6 +29,7 @@ export interface Service {
 export interface User {
   id: string;
   email: string;
+  password?: string;
   name?: string;
   image?: string;
   role?: string;

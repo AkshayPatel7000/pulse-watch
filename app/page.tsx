@@ -1,6 +1,6 @@
 "use client";
 
-import { signIn, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/app/components/ui/button";
 import {
@@ -8,21 +8,21 @@ import {
   Shield,
   Zap,
   Globe,
-  BarChart3,
   ArrowRight,
-  CheckCircle2,
   Clock,
   Bell,
-  Search,
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { AuthModal } from "./components/auth/AuthModal";
 
 export default function LandingPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authMode, setAuthMode] = useState<"login" | "register">("login");
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -32,8 +32,9 @@ export default function LandingPage() {
 
   useEffect(() => {
     if (status === "authenticated") {
-      if ((session?.user as any).onboarded) {
-        router.push(`/${(session?.user as any).tenantId}/dashboard`);
+      const user = session?.user as any;
+      if (user.onboarded) {
+        router.push(`/${user.tenantId}/dashboard`);
       } else {
         router.push("/onboarding");
       }
@@ -81,13 +82,22 @@ export default function LandingPage() {
             <Button
               className="bg-white text-black hover:bg-gray-200"
               size="sm"
-              onClick={() => signIn("google")}
+              onClick={() => {
+                setAuthMode("login");
+                setShowAuthModal(true);
+              }}
             >
               Sign In
             </Button>
           )}
         </nav>
       </header>
+
+      <AuthModal
+        open={showAuthModal}
+        onOpenChange={setShowAuthModal}
+        defaultMode={authMode}
+      />
 
       <main className="flex-1">
         {/* Hero Section */}
@@ -119,11 +129,14 @@ export default function LandingPage() {
               <Button
                 size="lg"
                 className="h-14 text-lg bg-blue-600 hover:bg-blue-700 sm:w-72"
-                onClick={() =>
-                  status === "authenticated"
-                    ? router.push("/onboarding")
-                    : signIn("google")
-                }
+                onClick={() => {
+                  if (status === "authenticated") {
+                    router.push("/onboarding");
+                  } else {
+                    setAuthMode("register");
+                    setShowAuthModal(true);
+                  }
+                }}
               >
                 Start Monitoring Free
                 <ArrowRight className="ml-2 h-5 w-5" />
@@ -294,11 +307,14 @@ export default function LandingPage() {
                 size="lg"
                 // variant="outline"
                 className="h-14 px-12 text-lg bg-white text-blue-600 hover:bg-blue-100 border-none relative z-10"
-                onClick={() =>
-                  status === "authenticated"
-                    ? router.push("/onboarding")
-                    : signIn("google")
-                }
+                onClick={() => {
+                  if (status === "authenticated") {
+                    router.push("/onboarding");
+                  } else {
+                    setAuthMode("register");
+                    setShowAuthModal(true);
+                  }
+                }}
               >
                 Get Started Now
               </Button>
