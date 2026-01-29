@@ -137,7 +137,7 @@ export function AlertsManagement({
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row justify-between gap-4">
         <div>
           <h2 className="text-2xl font-semibold">Alert Integrations</h2>
           <p className="text-muted-foreground mt-1">
@@ -148,7 +148,7 @@ export function AlertsManagement({
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <Input
             placeholder="Search services..."
-            className="pl-10"
+            className="px-10"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />

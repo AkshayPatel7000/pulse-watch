@@ -1,20 +1,22 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import { Service } from "../../lib/types";
-import { DashboardLayout } from "../../components/dashboard/DashboardLayout";
-import { ServiceDetail } from "../../components/dashboard/ServiceDetail";
+import { Service } from "@/app/lib/types";
+import { DashboardLayout } from "@/app/components/dashboard/DashboardLayout";
+import { ServiceDetail } from "@/app/components/dashboard/ServiceDetail";
 import { Loader2 } from "lucide-react";
 
 export default function ServiceDetailPage() {
-  const { id } = useParams();
+  const params = useParams();
+  const id = params?.id as string;
+  const orgName = params?.org_name as string;
   const [service, setService] = useState<Service | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchService = async () => {
       try {
-        const response = await fetch(`/api/services/${id}`);
+        const response = await fetch(`/api/services/${id}?org=${orgName}`);
         const data = await response.json();
         setService(data);
       } catch (error) {
@@ -24,10 +26,10 @@ export default function ServiceDetailPage() {
       }
     };
 
-    if (id) {
+    if (id && orgName) {
       fetchService();
     }
-  }, [id]);
+  }, [id, orgName]);
 
   if (loading) {
     return (

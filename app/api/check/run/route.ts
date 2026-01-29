@@ -14,10 +14,15 @@ export async function POST(request: Request) {
   }
 
   try {
+    const { searchParams } = new URL(request.url);
+    const org = searchParams.get("org");
+
     const db = await getDb();
+    const query = org ? { tenantId: org } : {};
+
     const services = await db
       .collection<Service>("services")
-      .find({})
+      .find(query)
       .toArray();
 
     const checkPromises = services.map(async (service: Service) => {
@@ -44,6 +49,7 @@ export async function POST(request: Request) {
         // Log status event
         await db.collection("status_events").insertOne({
           serviceId: service.id,
+          tenantId: service.tenantId,
           previousStatus: service.currentStatus,
           newStatus: newStatus,
           timestamp,
@@ -51,7 +57,7 @@ export async function POST(request: Request) {
 
         // Update service
         await db.collection("services").updateOne(
-          { id: service.id },
+          { id: service.id, tenantId: service.tenantId },
           {
             $set: {
               currentStatus: newStatus,

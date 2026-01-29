@@ -1,5 +1,5 @@
 "use client";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Service, ServiceStatus, StatusEvent } from "../../lib/types";
 import {
@@ -33,6 +33,8 @@ export function DashboardOverview({
   recentEvents,
 }: DashboardOverviewProps) {
   const router = useRouter();
+  const params = useParams();
+  const orgName = params?.org_name as string;
   const [now, setNow] = useState(0);
 
   useEffect(() => {
@@ -189,7 +191,9 @@ export function DashboardOverview({
               <div
                 key={service.id}
                 className="flex items-center justify-between p-4 rounded-lg border bg-card hover:bg-muted/50 cursor-pointer transition-colors"
-                onClick={() => router.push(`/services/${service.id}`)}
+                onClick={() =>
+                  router.push(`/${orgName}/services/${service.id}`)
+                }
               >
                 <div className="flex items-center gap-4 flex-1">
                   {getStatusIcon(service.currentStatus)}

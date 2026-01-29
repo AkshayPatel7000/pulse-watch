@@ -1,5 +1,5 @@
 "use client";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Service } from "../../lib/types";
 import {
@@ -50,6 +50,8 @@ export function ServicesManagement({
   onDeleteService,
 }: ServicesManagementProps) {
   const router = useRouter();
+  const params = useParams();
+  const orgName = params?.org_name as string;
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [deleteServiceId, setDeleteServiceId] = useState<string | null>(null);
   const [now, setNow] = useState(0);
@@ -163,7 +165,9 @@ export function ServicesManagement({
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => router.push(`/services/${service.id}`)}
+                      onClick={() =>
+                        router.push(`/${orgName}/services/${service.id}`)
+                      }
                     >
                       <Eye className="w-4 h-4 mr-2" />
                       View Details

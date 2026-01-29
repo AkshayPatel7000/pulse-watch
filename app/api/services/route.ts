@@ -2,13 +2,25 @@ import { NextResponse } from "next/server";
 import { getDb } from "@/app/lib/mongodb";
 import { Service } from "@/app/lib/types";
 import { v4 as uuidv4 } from "uuid";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/lib/auth";
 
-export async function GET() {
+import { getAuthorizedTenantId } from "@/app/lib/tenant-auth";
+
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const org = searchParams.get("org");
+    const tenantId = await getAuthorizedTenantId(org);
+
+    if (!tenantId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    }
+
     const db = await getDb();
     const services = await db
       .collection<Service>("services")
-      .find({})
+      .find({ tenantId })
       .toArray();
     return NextResponse.json(services);
   } catch (error: unknown) {
@@ -19,6 +31,11 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session || !(session.user as any).tenantId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await request.json();
     const { name, url, type, description } = body;
 
@@ -38,6 +55,7 @@ export async function POST(request: Request) {
       description,
       currentStatus: "up",
       lastCheckedAt: Date.now(),
+      tenantId: (session.user as any).tenantId,
     };
 
     await db.collection("services").insertOne(newService);

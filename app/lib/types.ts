@@ -23,6 +23,27 @@ export interface Service {
     notifyOnDegraded?: boolean;
     notifyOnRecovered?: boolean;
   };
+  tenantId: string;
+}
+
+export interface User {
+  id: string;
+  email: string;
+  name?: string;
+  image?: string;
+  role?: string;
+  orgName?: string;
+  tenantId?: string;
+}
+
+export interface Tenant {
+  id: string;
+  name: string;
+  slug: string;
+  createdAt: number;
+  cronApiKey?: string;
+  cronJobId?: number;
+  cronInterval?: number; // minutes
 }
 
 export interface ProbeResult {

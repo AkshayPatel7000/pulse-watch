@@ -1,6 +1,6 @@
 "use client";
-import { DashboardLayout } from "../../components/dashboard/DashboardLayout";
-import { ExternalStatusGrid } from "../../components/dashboard/ExternalStatusGrid";
+import { DashboardLayout } from "@/app/components/dashboard/DashboardLayout";
+import { ExternalStatusGrid } from "@/app/components/dashboard/ExternalStatusGrid";
 
 export default function ExternalStatusPage() {
   return (
