@@ -5,16 +5,19 @@ import { v4 as uuidv4 } from "uuid";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/lib/auth";
 
-import { getAuthorizedTenantId } from "@/app/lib/tenant-auth";
+import { getTenantId } from "@/app/lib/tenant-auth";
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const org = searchParams.get("org");
-    const tenantId = await getAuthorizedTenantId(org);
+    const tenantId = await getTenantId(org);
 
     if (!tenantId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+      return NextResponse.json(
+        { error: "Organization not found" },
+        { status: 404 },
+      );
     }
 
     const db = await getDb();
