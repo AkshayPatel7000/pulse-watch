@@ -123,7 +123,7 @@ export async function POST(request: Request) {
 
     // 2. Create new cron job
     // The callback URL points back to our check run API with the org slug
-    const baseUrl = `https://${process.env.NEXTAUTH_URL}`;
+    const baseUrl = process.env.NEXTAUTH_URL;
 
     if (!baseUrl && process.env.NODE_ENV === "production") {
       throw new Error(
@@ -131,7 +131,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const finalBaseUrl = `https://${process.env.NEXTAUTH_URL}`;
+    const finalBaseUrl = process.env.NEXTAUTH_URL;
     const callbackUrl = `${finalBaseUrl}/api/check/run?org=${tenantSlug}`;
     const jobTitle = `Pulse Watch - ${tenant.name}`;
 
