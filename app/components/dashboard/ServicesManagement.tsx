@@ -39,7 +39,10 @@ import {
 interface ServicesManagementProps {
   services: Service[];
   onAddService: (
-    service: Omit<Service, "id" | "currentStatus" | "lastCheckedAt">,
+    service: Omit<
+      Service,
+      "id" | "currentStatus" | "lastCheckedAt" | "tenantId"
+    >,
   ) => void;
   onDeleteService: (serviceId: string) => void;
 }

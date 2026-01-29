@@ -18,6 +18,7 @@ export const mockServices: Service[] = [
     currentStatus: "up",
     lastCheckedAt: Date.now() - 300000, // 5 minutes ago
     description: "Primary customer-facing website",
+    tenantId: "mock-tenant",
   },
   {
     id: "2",
@@ -27,6 +28,7 @@ export const mockServices: Service[] = [
     currentStatus: "up",
     lastCheckedAt: Date.now() - 300000,
     description: "Main API gateway for all services",
+    tenantId: "mock-tenant",
   },
   {
     id: "3",
@@ -36,6 +38,7 @@ export const mockServices: Service[] = [
     currentStatus: "degraded",
     lastCheckedAt: Date.now() - 600000, // 10 minutes ago
     description: "Payment processing endpoint",
+    tenantId: "mock-tenant",
   },
   {
     id: "4",
@@ -45,6 +48,7 @@ export const mockServices: Service[] = [
     currentStatus: "up",
     lastCheckedAt: Date.now() - 300000,
     description: "Authentication and authorization service",
+    tenantId: "mock-tenant",
   },
   {
     id: "5",
@@ -54,6 +58,7 @@ export const mockServices: Service[] = [
     currentStatus: "down",
     lastCheckedAt: Date.now() - 900000, // 15 minutes ago
     description: "Internal admin dashboard",
+    tenantId: "mock-tenant",
   },
 ];
 
@@ -221,13 +226,17 @@ class MockDatabase {
   }
 
   addService(
-    service: Omit<Service, "id" | "currentStatus" | "lastCheckedAt">,
+    service: Omit<
+      Service,
+      "id" | "currentStatus" | "lastCheckedAt" | "tenantId"
+    >,
   ): Service {
     const newService: Service = {
       ...service,
       id: Date.now().toString(),
       currentStatus: "up",
       lastCheckedAt: Date.now(),
+      tenantId: "mock-tenant",
     };
     this.services.push(newService);
     this.probeResults.set(newService.id, generateProbeResults(newService.id));
