@@ -62,7 +62,7 @@ export async function createCronJob(
         requestMethod: 1,
         extendedData: {
           headers: {
-            Authorization: `Bearer ${apiKey}`,
+            Authorization: `Bearer ${process.env.CRON_SECRET}`,
           },
         },
         schedule: {
