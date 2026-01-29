@@ -75,7 +75,6 @@ export function CronSettings() {
       setIsSuccess(true);
       setHasExistingKey(true);
       setIsEditing(false);
-      fetchSettings();
     } catch (error: any) {
       toast.error(error.message || "Failed to synchronize Cron Job");
       setIsSuccess(false);

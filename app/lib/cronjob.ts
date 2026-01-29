@@ -16,16 +16,29 @@ export async function getCronJob(apiKey: string, jobId: number) {
     },
   });
 
-  if (response.status === 404) {
-    return null;
-  }
+  const text = await response.text();
 
-  const data = await response.json();
   if (!response.ok) {
-    throw new Error(data.error || "Failed to fetch cron job");
+    let errorMessage = `Server error: ${response.status} ${response.statusText}`;
+    try {
+      if (text) {
+        const data = JSON.parse(text);
+        errorMessage = data.error || errorMessage;
+      }
+    } catch {
+      // Keep status text error
+    }
+    throw new Error(errorMessage);
   }
 
-  return data.job;
+  if (!text) return null;
+
+  try {
+    const data = JSON.parse(text);
+    return data.job;
+  } catch {
+    throw new Error("Invalid JSON response from cron-job.org");
+  }
 }
 
 export async function createCronJob(
@@ -58,12 +71,32 @@ export async function createCronJob(
     }),
   });
 
-  const data = await response.json();
+  const text = await response.text();
+
   if (!response.ok) {
-    throw new Error(data.error || "Failed to create cron job");
+    let errorMessage = `Failed to create cron job: ${response.status} ${response.statusText}`;
+    try {
+      if (text) {
+        const data = JSON.parse(text);
+        errorMessage = data.error || errorMessage;
+      }
+    } catch {
+      // Keep status text error
+    }
+    throw new Error(errorMessage);
   }
 
-  return data;
+  if (!text) {
+    throw new Error(
+      "Cron job created but received no confirmation ID from server.",
+    );
+  }
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    throw new Error("Invalid JSON response when creating cron job");
+  }
 }
 
 export async function deleteCronJob(apiKey: string, jobId: number) {
@@ -74,9 +107,19 @@ export async function deleteCronJob(apiKey: string, jobId: number) {
     },
   });
 
+  const text = await response.text();
+
   if (!response.ok) {
-    const data = await response.json();
-    throw new Error(data.error || "Failed to delete cron job");
+    let errorMessage = `Failed to delete cron job: ${response.status} ${response.statusText}`;
+    try {
+      if (text) {
+        const data = JSON.parse(text);
+        errorMessage = data.error || errorMessage;
+      }
+    } catch {
+      // Keep status text error
+    }
+    throw new Error(errorMessage);
   }
 
   return true;
@@ -90,10 +133,27 @@ export async function listCronJobs(apiKey: string) {
     },
   });
 
-  const data = await response.json();
+  const text = await response.text();
+
   if (!response.ok) {
-    throw new Error(data.error || "Failed to list cron jobs");
+    let errorMessage = `Failed to list cron jobs: ${response.status} ${response.statusText}`;
+    try {
+      if (text) {
+        const data = JSON.parse(text);
+        errorMessage = data.error || errorMessage;
+      }
+    } catch {
+      // Keep status text error
+    }
+    throw new Error(errorMessage);
   }
 
-  return data.jobs || [];
+  if (!text) return [];
+
+  try {
+    const data = JSON.parse(text);
+    return data.jobs || [];
+  } catch {
+    throw new Error("Invalid JSON response when listing cron jobs");
+  }
 }

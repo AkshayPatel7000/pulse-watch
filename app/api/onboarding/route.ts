@@ -24,16 +24,19 @@ export async function POST(request: Request) {
     const db = await getDb();
 
     // Create tenant slug
-    const slug = orgName
+    let slug = orgName
       .toLowerCase()
+      .trim()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "");
 
-    // Check if slug is already taken (very basic check)
+    if (!slug) slug = "org-" + uuidv4().slice(0, 8);
+
+    // Check if slug is already taken
     const existingTenant = await db.collection("tenants").findOne({ slug });
     if (existingTenant) {
-      // If it exists, we might want to append something or fail
-      // For now, let's just use it or fail
+      // Append a short random string to make it unique
+      slug = `${slug}-${uuidv4().slice(0, 4)}`;
     }
 
     const tenantId = uuidv4();
@@ -46,14 +49,20 @@ export async function POST(request: Request) {
 
     await db.collection("tenants").insertOne(tenant);
 
+    const user = session.user as {
+      id?: string;
+      email?: string;
+      name?: string;
+      image?: string;
+    };
     const updatedUser = {
-      id: (session.user as any).id || uuidv4(),
-      email: session.user.email,
-      name: session.user.name,
-      image: session.user.image,
+      id: user.id || uuidv4(),
+      email: user.email,
+      name: user.name,
+      image: user.image,
       role,
       orgName,
-      tenantId: slug, // Using slug as tenantId for routing convenience as requested http:/localhost/{{org_name}}/status
+      tenantId: slug,
     };
 
     await db

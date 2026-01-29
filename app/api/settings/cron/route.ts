@@ -2,21 +2,18 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/lib/auth";
 import { getDb } from "@/app/lib/mongodb";
-import {
-  createCronJob,
-  deleteCronJob,
-  listCronJobs,
-  getCronJob,
-} from "@/app/lib/cronjob";
+import { createCronJob, deleteCronJob, getCronJob } from "@/app/lib/cronjob";
 
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || !(session.user as any).tenantId) {
+    const user = session?.user as { tenantId?: string } | undefined;
+
+    if (!session || !user?.tenantId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const tenantSlug = (session.user as any).tenantId;
+    const tenantSlug = user.tenantId;
     const db = await getDb();
     const tenant = await db.collection("tenants").findOne({ slug: tenantSlug });
 
@@ -60,27 +57,48 @@ export async function GET() {
       hasKey: isConfigured,
       wasAutoHealed,
     });
-  } catch (error: any) {
-    return NextResponse.json(
-      { error: error.message || "Internal Server Error" },
-      { status: 500 },
-    );
+  } catch (error: unknown) {
+    const message =
+      error instanceof Error ? error.message : "Internal Server Error";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || !(session.user as any).tenantId) {
+    const user = session?.user as { tenantId?: string } | undefined;
+
+    if (!session || !user?.tenantId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const tenantSlug = (session.user as any).tenantId;
-    const { apiKey, interval } = await request.json();
+    const tenantSlug = user.tenantId;
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json(
+        { error: "Invalid JSON body in request" },
+        { status: 400 },
+      );
+    }
+    const { apiKey, interval } = body;
 
     if (!apiKey) {
       return NextResponse.json(
         { error: "API Key is required" },
+        { status: 400 },
+      );
+    }
+
+    // Basic validation to prevent pasting the API response instead of the key
+    if (apiKey.trim().startsWith("{") || apiKey.trim().startsWith("[")) {
+      return NextResponse.json(
+        {
+          error:
+            "Invalid API Key format. It looks like you pasted a JSON object instead of just the API key.",
+        },
         { status: 400 },
       );
     }
@@ -105,7 +123,16 @@ export async function POST(request: Request) {
 
     // 2. Create new cron job
     // The callback URL points back to our check run API with the org slug
-    const callbackUrl = `${process.env.NEXTAUTH_URL}/api/check/run?org=${tenantSlug}`;
+    const baseUrl = `https://${process.env.NEXTAUTH_URL}`;
+
+    if (!baseUrl && process.env.NODE_ENV === "production") {
+      throw new Error(
+        "NEXTAUTH_URL environment variable is not set. Cannot determine callback URL.",
+      );
+    }
+
+    const finalBaseUrl = `https://${process.env.NEXTAUTH_URL}`;
+    const callbackUrl = `${finalBaseUrl}/api/check/run?org=${tenantSlug}`;
     const jobTitle = `Pulse Watch - ${tenant.name}`;
 
     const jobResult = await createCronJob(
@@ -128,22 +155,23 @@ export async function POST(request: Request) {
     );
 
     return NextResponse.json({ success: true, jobId: jobResult.jobId });
-  } catch (error: any) {
-    return NextResponse.json(
-      { error: error.message || "Internal Server Error" },
-      { status: 500 },
-    );
+  } catch (error: unknown) {
+    const message =
+      error instanceof Error ? error.message : "Internal Server Error";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
-export async function DELETE(request: Request) {
+export async function DELETE() {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || !(session.user as any).tenantId) {
+    const user = session?.user as { tenantId?: string } | undefined;
+
+    if (!session || !user?.tenantId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const tenantSlug = (session.user as any).tenantId;
+    const tenantSlug = user.tenantId;
     const db = await getDb();
     const tenant = await db.collection("tenants").findOne({ slug: tenantSlug });
 
@@ -167,10 +195,9 @@ export async function DELETE(request: Request) {
     );
 
     return NextResponse.json({ success: true });
-  } catch (error: any) {
-    return NextResponse.json(
-      { error: error.message || "Internal Server Error" },
-      { status: 500 },
-    );
+  } catch (error: unknown) {
+    const message =
+      error instanceof Error ? error.message : "Internal Server Error";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
