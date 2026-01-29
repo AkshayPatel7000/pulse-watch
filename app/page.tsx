@@ -56,7 +56,7 @@ export default function LandingPage() {
             <Activity className="h-6 w-6 text-white" />
           </div>
           <span className="font-bold text-2xl tracking-tight hidden sm:inline-block">
-            Pulse <span className="text-blue-500">Watch</span>
+            Ping<span className="text-blue-500">lyfy</span>
           </span>
         </Link>
         <nav className="ml-auto flex gap-4 sm:gap-8 items-center">
