@@ -78,6 +78,9 @@ export function ServiceDetail({ service }: ServiceDetailProps) {
   const [notifyOnRecovered, setNotifyOnRecovered] = useState<boolean>(
     service.notificationSettings?.notifyOnRecovered ?? true,
   );
+  const [notifyOnCriticalOnly, setNotifyOnCriticalOnly] = useState<boolean>(
+    service.notificationSettings?.notifyOnCriticalOnly ?? false,
+  );
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
@@ -260,6 +263,7 @@ export function ServiceDetail({ service }: ServiceDetailProps) {
             notifyOnDown,
             notifyOnDegraded,
             notifyOnRecovered,
+            notifyOnCriticalOnly,
           },
         }),
       });
@@ -644,6 +648,20 @@ export function ServiceDetail({ service }: ServiceDetailProps) {
                     type="checkbox"
                     checked={notifyOnRecovered}
                     onChange={(e) => setNotifyOnRecovered(e.target.checked)}
+                    className="h-5 w-5"
+                  />
+                </div>
+                <div className="flex items-center justify-between border-t pt-4">
+                  <div className="flex-1">
+                    <Label className="text-base">Critical Only Mode</Label>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Alert only on Up ↔ Down transitions (ignores Degraded)
+                    </p>
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={notifyOnCriticalOnly}
+                    onChange={(e) => setNotifyOnCriticalOnly(e.target.checked)}
                     className="h-5 w-5"
                   />
                 </div>

@@ -20,20 +20,34 @@ export async function sendStatusAlert(
   const settings = service.notificationSettings;
   if (!settings) return;
 
-  // Determine if we should notify
-  let shouldNotify = false;
-  if (newStatus === "down" && settings.notifyOnDown) shouldNotify = true;
-  if (newStatus === "degraded" && settings.notifyOnDegraded)
-    shouldNotify = true;
-  if (
-    newStatus === "up" &&
-    (previousStatus === "down" || previousStatus === "degraded") &&
-    settings.notifyOnRecovered
-  ) {
-    shouldNotify = true;
-  }
+  // If "Critical Only" mode is enabled, only alert on up↔down transitions
+  if (settings.notifyOnCriticalOnly) {
+    const isCriticalTransition =
+      (previousStatus === "up" && newStatus === "down") ||
+      (previousStatus === "down" && newStatus === "up");
 
-  if (!shouldNotify) return;
+    if (!isCriticalTransition) {
+      console.log(
+        `[Notifications] Skipping alert for ${service.name}: Critical Only mode enabled, transition ${previousStatus}→${newStatus} is not critical`,
+      );
+      return;
+    }
+  } else {
+    // Standard notification rules (when Critical Only is disabled)
+    let shouldNotify = false;
+    if (newStatus === "down" && settings.notifyOnDown) shouldNotify = true;
+    if (newStatus === "degraded" && settings.notifyOnDegraded)
+      shouldNotify = true;
+    if (
+      newStatus === "up" &&
+      (previousStatus === "down" || previousStatus === "degraded") &&
+      settings.notifyOnRecovered
+    ) {
+      shouldNotify = true;
+    }
+
+    if (!shouldNotify) return;
+  }
 
   const timestamp = new Date().toLocaleString();
   const title = `[PulseWatch] status changed for ${service.name}`;

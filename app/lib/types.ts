@@ -22,6 +22,7 @@ export interface Service {
     notifyOnDown?: boolean;
     notifyOnDegraded?: boolean;
     notifyOnRecovered?: boolean;
+    notifyOnCriticalOnly?: boolean; // Only alert on up↔down transitions
   };
   tenantId: string;
 }

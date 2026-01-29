@@ -51,6 +51,7 @@ export function AlertsManagement({
         notifyOnDown?: boolean;
         notifyOnDegraded?: boolean;
         notifyOnRecovered?: boolean;
+        notifyOnCriticalOnly?: boolean;
       }
     >
   >({});
@@ -113,6 +114,10 @@ export function AlertsManagement({
           changes.notifyOnRecovered ??
           service.notificationSettings?.notifyOnRecovered ??
           true,
+        notifyOnCriticalOnly:
+          changes.notifyOnCriticalOnly ??
+          service.notificationSettings?.notifyOnCriticalOnly ??
+          false,
         slackWebhook:
           changes.slackWebhook ?? service.notificationSettings?.slackWebhook,
         emails: emailList,
@@ -257,7 +262,7 @@ export function AlertsManagement({
                       <Bell className="w-4 h-4" />
                       Notification Rules
                     </p>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="flex items-center gap-2">
                         <input
                           type="checkbox"
@@ -333,7 +338,37 @@ export function AlertsManagement({
                           Recovered
                         </Label>
                       </div>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          id={`critical-${service.id}`}
+                          checked={
+                            serviceEdits.notifyOnCriticalOnly ??
+                            service.notificationSettings
+                              ?.notifyOnCriticalOnly ??
+                            false
+                          }
+                          onChange={(e) =>
+                            handleInputChange(
+                              service.id,
+                              "notifyOnCriticalOnly",
+                              e.target.checked,
+                            )
+                          }
+                          className="w-4 h-4 text-primary rounded border-input focus:ring-ring"
+                        />
+                        <Label
+                          htmlFor={`critical-${service.id}`}
+                          className="text-xs cursor-pointer"
+                        >
+                          Critical Only
+                        </Label>
+                      </div>
                     </div>
+                    <p className="text-[10px] text-muted-foreground mt-2">
+                      💡 <strong>Critical Only:</strong> Alert only when
+                      switching between Up ↔ Down (ignores Degraded)
+                    </p>
                   </div>
                 </div>
               </CardContent>
