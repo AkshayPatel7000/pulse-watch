@@ -35,7 +35,7 @@ export async function getCronJob(apiKey: string, jobId: number) {
 
   try {
     const data = JSON.parse(text);
-    return data.job;
+    return data.jobDetails;
   } catch {
     throw new Error("Invalid JSON response from cron-job.org");
   }
@@ -59,6 +59,12 @@ export async function createCronJob(
         url,
         enabled: true,
         saveResponses: true,
+        requestMethod: 1,
+        extendedData: {
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+          },
+        },
         schedule: {
           timezone: "UTC",
           hours: [-1],
