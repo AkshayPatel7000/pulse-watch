@@ -149,7 +149,7 @@ export function DashboardLayout({
             </div>
 
             {/* Mobile/Tablet Navigation */}
-            <div className="flex lg:hidden items-center gap-2">
+            <div className=" lg:hidden items-center gap-2">
               <ThemeToggle />
               <Button
                 variant="ghost"
