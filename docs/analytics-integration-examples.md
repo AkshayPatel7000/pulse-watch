@@ -1,6 +1,6 @@
 # Google Analytics Integration Examples
 
-This document demonstrates best practices for adding analytics tracking to various parts of the PulseWatch application.
+This document demonstrates best practices for adding analytics tracking to various parts of the Pinglyfy application.
 
 ## Example 1: Tracking Service Status Changes
 
@@ -348,7 +348,7 @@ Use debouncing for events like search, scroll, or resize to avoid overwhelming y
 
 ## Common Event Categories
 
-Here are the recommended event categories for PulseWatch:
+Here are the recommended event categories for Pinglyfy:
 
 - **Service Management**: Adding, editing, deleting services
 - **Service Monitoring**: Status changes, health checks

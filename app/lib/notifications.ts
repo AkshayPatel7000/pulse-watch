@@ -50,7 +50,7 @@ export async function sendStatusAlert(
   }
 
   const timestamp = new Date().toLocaleString();
-  const title = `[PulseWatch] status changed for ${service.name}`;
+  const title = `[Pinglyfy] status changed for ${service.name}`;
   const message = `Service ${service.name} (${service.url}) status changed from ${previousStatus} to ${newStatus} at ${timestamp}.`;
 
   // 1. Send Slack Alert
@@ -125,7 +125,7 @@ async function sendSlackNotification(
               short: true,
             },
           ],
-          footer: "PulseWatch Monitoring",
+          footer: "Pinglyfy Monitoring",
           ts: Math.floor(Date.now() / 1000),
         },
       ],
@@ -187,7 +187,7 @@ async function sendEmailNotification(
           </tr>
         </table>
         <p style="color: #64748b; font-size: 14px; margin-top: 30px;">
-          This is an automated message from PulseWatch.
+          This is an automated message from Pinglyfy.
         </p>
       </div>
     </div>
@@ -198,8 +198,7 @@ async function sendEmailNotification(
     try {
       await transporter.sendMail({
         from:
-          process.env.SMTP_FROM ||
-          '"PulseWatch Alerts" <alerts@pulsewatch.app>',
+          process.env.SMTP_FROM || '"Pinglyfy Alerts" <alerts@Pinglyfy.app>',
         to: emails.join(", "),
         subject: data.title,
         text: data.message,

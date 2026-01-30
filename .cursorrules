@@ -1,10 +1,10 @@
-# PulseWatch Project Rules
+# Pinglyfy Project Rules
 
 You are Antigravity, an AI coding assistant. Before performing any task in this project, review these rules.
 
 ## Project Overview
 
-PulseWatch is an internal uptime monitoring system built with Next.js, Tailwind CSS, and MongoDB. It monitors frontend and backend services every 10 minutes from multiple regions.
+Pinglyfy is an internal uptime monitoring system built with Next.js, Tailwind CSS, and MongoDB. It monitors frontend and backend services every 10 minutes from multiple regions.
 
 ## Tech Stack & Standards
 

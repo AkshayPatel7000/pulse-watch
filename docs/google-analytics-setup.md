@@ -1,10 +1,10 @@
 # Google Analytics Setup Guide
 
-This document explains how to set up and use Google Analytics 4 (GA4) in the PulseWatch application.
+This document explains how to set up and use Google Analytics 4 (GA4) in the Pinglyfy application.
 
 ## Overview
 
-Google Analytics has been integrated into PulseWatch to track:
+Google Analytics has been integrated into Pinglyfy to track:
 
 - **Page views** (automatic)
 - **Service status changes**
@@ -21,7 +21,7 @@ Google Analytics has been integrated into PulseWatch to track:
 2. Click **Admin** (gear icon in the bottom left)
 3. In the **Property** column, click **Create Property**
 4. Enter your property details:
-   - **Property name**: PulseWatch (or your preferred name)
+   - **Property name**: Pinglyfy (or your preferred name)
    - **Reporting time zone**: Select your timezone
    - **Currency**: Select your currency
 5. Click **Next** and complete the business information
@@ -32,8 +32,8 @@ Google Analytics has been integrated into PulseWatch to track:
 1. In your new property, go to **Admin** > **Data Streams**
 2. Click **Add stream** > **Web**
 3. Enter your website details:
-   - **Website URL**: Your production URL (e.g., `https://pulsewatch.example.com`)
-   - **Stream name**: PulseWatch Web
+   - **Website URL**: Your production URL (e.g., `https://Pinglyfy.example.com`)
+   - **Stream name**: Pinglyfy Web
 4. Click **Create stream**
 5. Copy the **Measurement ID** (format: `G-XXXXXXXXXX`)
 
@@ -144,7 +144,7 @@ trackEvent({
 
 2. **`lib/analytics.ts`**
    - Utility functions for tracking custom events
-   - Pre-configured event tracking for common PulseWatch actions
+   - Pre-configured event tracking for common Pinglyfy actions
    - Type-safe event tracking with TypeScript
 
 3. **`app/layout.tsx`** (modified)
@@ -164,7 +164,7 @@ trackEvent({
 ## Viewing Analytics Data
 
 1. Go to [Google Analytics](https://analytics.google.com/)
-2. Select your PulseWatch property
+2. Select your Pinglyfy property
 3. Navigate to **Reports** to view:
    - **Real-time**: See current active users and their activity
    - **Engagement**: View page views, events, and user engagement

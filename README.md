@@ -1,15 +1,15 @@
 ## Backend Setup
 
-PulseWatch uses MongoDB for data persistence and Vercel/GitHub Actions for scheduling checks.
+Pinglyfy uses MongoDB for data persistence and Vercel/GitHub Actions for scheduling checks.
 
 ### 1. Database Setup
 
 1. Create a MongoDB Atlas cluster (M0 Free Tier is sufficient).
-2. Create a database named `pulsewatch`.
+2. Create a database named `Pinglyfy`.
 3. Create a `.env.local` file with:
    ```env
    MONGODB_URI=your_mongodb_connection_string
-   MONGODB_DB=pulsewatch
+   MONGODB_DB=Pinglyfy
    ```
 
 ### 2. Seeding Data

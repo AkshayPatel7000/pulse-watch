@@ -1,0 +1,40 @@
+{
+  "name": "Pinglyfy - Service Monitoring",
+  "short_name": "Pinglyfy",
+  "description": "Real-time infrastructure monitoring, status pages, and incident alerts for modern dev teams",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#06b6d4",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["productivity", "utilities", "developer tools"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "View service monitoring dashboard",
+      "url": "/dashboard",
+      "icons": [
+        {
+          "src": "/icon.png",
+          "sizes": "512x512"
+        }
+      ]
+    }
+  ]
+}
