@@ -96,17 +96,19 @@ export function PublicStatusPage({
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="bg-card border-b border-border">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center gap-3">
-            <Activity className="w-8 h-8 text-blue-600" />
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Activity className="w-6 h-6 sm:w-8 sm:h-8 text-blue-600 flex-shrink-0" />
             <div>
-              <h1 className="text-2xl font-semibold">System Status</h1>
-              <p className="text-sm text-muted-foreground mt-1">
+              <h1 className="text-xl sm:text-2xl font-semibold">
+                System Status
+              </h1>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-1">
                 Last updated{" "}
                 {lastUpdate > 0
                   ? formatRelativeTime(lastUpdate, now)
                   : "Just now"}{" "}
-                • Auto-refresh enabled
+                <span className="hidden sm:inline">• Auto-refresh enabled</span>
               </p>
             </div>
           </div>
@@ -114,8 +116,8 @@ export function PublicStatusPage({
       </header>
 
       {/* Main Content */}
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="space-y-8">
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <div className="space-y-6 sm:space-y-8">
           {/* Overall Status Banner */}
           <Card
             className={
@@ -126,22 +128,28 @@ export function PublicStatusPage({
                   : "border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-950/20"
             }
           >
-            <CardHeader>
-              <div className="flex items-start gap-4">
-                <div className="mt-1">{getStatusIcon(overallStatus)}</div>
-                <div className="flex-1">
-                  <CardTitle className="text-xl mb-2">
+            <CardHeader className="p-4 sm:p-6">
+              <div className="flex items-start gap-3 sm:gap-4">
+                <div className="mt-0.5 sm:mt-1 flex-shrink-0">
+                  {getStatusIcon(overallStatus)}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <CardTitle className="text-lg sm:text-xl mb-2">
                     {getOverallMessage()}
                   </CardTitle>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-xs sm:text-sm text-muted-foreground">
                     {getOverallDescription()}
                   </p>
-                  <div className="flex items-center gap-2 mt-4 text-xs text-muted-foreground/80">
-                    <Globe className="w-3 h-3" />
-                    <span>Monitored from 5 regions globally</span>
-                    <span className="mx-2">•</span>
-                    <Clock className="w-3 h-3" />
-                    <span>Checked every 10 minutes</span>
+                  <div className="flex flex-wrap items-center gap-2 mt-3 sm:mt-4 text-xs text-muted-foreground/80">
+                    <div className="flex items-center gap-1">
+                      <Globe className="w-3 h-3" />
+                      <span>5 regions</span>
+                    </div>
+                    <span className="hidden sm:inline">•</span>
+                    <div className="flex items-center gap-1">
+                      <Clock className="w-3 h-3" />
+                      <span>10 min checks</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -150,7 +158,9 @@ export function PublicStatusPage({
 
           {/* Current Status */}
           <div>
-            <h2 className="text-lg font-semibold mb-4">Current Status</h2>
+            <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">
+              Current Status
+            </h2>
             <div className="space-y-3">
               {services.map((service) => {
                 const probeResults = mockDB.getProbeResults(service.id);
@@ -161,13 +171,15 @@ export function PublicStatusPage({
 
                 return (
                   <Card key={service.id}>
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3 flex-1">
-                          {getStatusIcon(service.currentStatus)}
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className="font-medium">
+                    <CardContent className="p-3 sm:p-4">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <div className="flex items-start gap-2 sm:gap-3 flex-1 min-w-0">
+                          <div className="flex-shrink-0 mt-0.5">
+                            {getStatusIcon(service.currentStatus)}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-wrap items-center gap-2 mb-1">
+                              <span className="font-medium text-sm sm:text-base">
                                 {service.name}
                               </span>
                               <Badge variant="outline" className="text-xs">
@@ -175,13 +187,13 @@ export function PublicStatusPage({
                               </Badge>
                             </div>
                             {service.description && (
-                              <p className="text-sm text-muted-foreground">
+                              <p className="text-xs sm:text-sm text-muted-foreground">
                                 {service.description}
                               </p>
                             )}
                           </div>
                         </div>
-                        <div className="flex items-center gap-6 text-right">
+                        <div className="flex items-center gap-4 sm:gap-6 justify-between sm:justify-end sm:text-right flex-shrink-0">
                           <div>
                             <p className="text-xs text-muted-foreground mb-1">
                               30d Uptime
@@ -192,7 +204,7 @@ export function PublicStatusPage({
                           </div>
                           <div>
                             <p
-                              className={`font-medium ${getStatusColor(service.currentStatus)}`}
+                              className={`font-medium text-sm sm:text-base ${getStatusColor(service.currentStatus)}`}
                             >
                               {getStatusLabel(service.currentStatus)}
                             </p>
@@ -214,11 +226,11 @@ export function PublicStatusPage({
           {/* Incident History */}
           {recentEvents.length > 0 && (
             <div>
-              <h2 className="text-lg font-semibold mb-4">
+              <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">
                 Recent Incidents (Last 30 Days)
               </h2>
               <Card>
-                <CardContent className="p-6">
+                <CardContent className="p-4 sm:p-6">
                   <div className="space-y-4">
                     {recentEvents.map((event) => {
                       const service = services.find(
@@ -239,10 +251,10 @@ export function PublicStatusPage({
                       return (
                         <div
                           key={event.id}
-                          className="flex items-start gap-3 pb-4 border-b last:border-b-0 last:pb-0"
+                          className="flex items-start gap-2 sm:gap-3 pb-4 border-b last:border-b-0 last:pb-0"
                         >
                           <div
-                            className={`w-2 h-2 rounded-full mt-2 ${
+                            className={`w-2 h-2 rounded-full mt-1.5 sm:mt-2 flex-shrink-0 ${
                               event.newStatus === "up"
                                 ? "bg-green-600"
                                 : event.newStatus === "degraded"
@@ -250,13 +262,13 @@ export function PublicStatusPage({
                                   : "bg-red-600"
                             }`}
                           />
-                          <div className="flex-1">
-                            <div className="flex items-start justify-between gap-4">
-                              <div>
-                                <p className="font-medium mb-1">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4">
+                              <div className="flex-1 min-w-0">
+                                <p className="font-medium mb-1 text-sm sm:text-base">
                                   {service.name}
                                 </p>
-                                <p className="text-sm text-muted-foreground">
+                                <p className="text-xs sm:text-sm text-muted-foreground">
                                   Status changed from{" "}
                                   <span
                                     className={getStatusColor(
@@ -280,7 +292,7 @@ export function PublicStatusPage({
                                     </p>
                                   )}
                               </div>
-                              <span className="text-sm text-muted-foreground/60 whitespace-nowrap">
+                              <span className="text-xs sm:text-sm text-muted-foreground/60 whitespace-nowrap flex-shrink-0">
                                 {now > 0
                                   ? formatRelativeTime(event.timestamp, now)
                                   : "..."}
@@ -298,12 +310,14 @@ export function PublicStatusPage({
 
           {/* Footer Info */}
           <Card className="bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-900/50">
-            <CardContent className="p-6">
-              <div className="flex items-start gap-3">
-                <Activity className="w-5 h-5 text-blue-600 mt-0.5" />
+            <CardContent className="p-4 sm:p-6">
+              <div className="flex items-start gap-2 sm:gap-3">
+                <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 mt-0.5 flex-shrink-0" />
                 <div>
-                  <h3 className="font-medium mb-2">About This Status Page</h3>
-                  <p className="text-sm text-muted-foreground">
+                  <h3 className="font-medium mb-2 text-sm sm:text-base">
+                    About This Status Page
+                  </h3>
+                  <p className="text-xs sm:text-sm text-muted-foreground">
                     This page displays real-time status information for all our
                     services. Our monitoring system checks each endpoint every
                     10 minutes from 5 global regions to ensure accurate

@@ -16,6 +16,8 @@ import {
   CheckCircle2,
   XCircle,
   TrendingUp,
+  Search,
+  Filter,
 } from "lucide-react";
 import {
   getStatusColor,
@@ -36,6 +38,10 @@ export function DashboardOverview({
   const params = useParams();
   const orgName = params?.org_name as string;
   const [now, setNow] = useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterType, setFilterType] = useState<"all" | "backend" | "frontend">(
+    "all",
+  );
 
   useEffect(() => {
     // Update time asynchronously to avoid cascading render warning
@@ -52,6 +58,19 @@ export function DashboardOverview({
       clearInterval(interval);
     };
   }, []);
+
+  // Filter services based on search term and type
+  const filteredServices = services.filter((service) => {
+    const matchesSearch =
+      service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      service.url.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesType =
+      filterType === "all" ||
+      service.type.toLowerCase() === filterType.toLowerCase();
+
+    return matchesSearch && matchesType;
+  });
 
   const getOverallStatus = (services: Service[]): ServiceStatus => {
     const downCount = services.filter((s) => s.currentStatus === "down").length;
@@ -184,49 +203,114 @@ export function DashboardOverview({
           <CardDescription>
             Current status of all monitored services
           </CardDescription>
+
+          {/* Search and Filter */}
+          <div className="flex flex-col sm:flex-row gap-3 mt-4">
+            {/* Search Input */}
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder="Search services by name or URL..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-input rounded-md bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+
+            {/* Filter Buttons */}
+            <div className="flex gap-2">
+              <button
+                onClick={() => setFilterType("all")}
+                className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                  filterType === "all"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                }`}
+              >
+                <Filter className="w-4 h-4 inline mr-1" />
+                All
+              </button>
+              <button
+                onClick={() => setFilterType("backend")}
+                className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                  filterType === "backend"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                }`}
+              >
+                Backend
+              </button>
+              <button
+                onClick={() => setFilterType("frontend")}
+                className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                  filterType === "frontend"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                }`}
+              >
+                Frontend
+              </button>
+            </div>
+          </div>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
-            {services.map((service) => (
-              <div
-                key={service.id}
-                className="flex items-center justify-between p-4 rounded-lg border bg-card hover:bg-muted/50 cursor-pointer transition-colors"
-                onClick={() =>
-                  router.push(`/${orgName}/services/${service.id}`)
-                }
-              >
-                <div className="flex items-center gap-4 flex-1">
-                  {getStatusIcon(service.currentStatus)}
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">{service.name}</span>
-                      <Badge variant="outline" className="text-xs">
-                        {service.type}
-                      </Badge>
+          {filteredServices.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              No services found matching your criteria
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {filteredServices.map((service) => (
+                <div
+                  key={service.id}
+                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 rounded-lg border bg-card hover:bg-muted/50 cursor-pointer transition-colors gap-3"
+                  onClick={() =>
+                    router.push(`/${orgName}/services/${service.id}`)
+                  }
+                >
+                  <div className="flex items-start gap-3 sm:gap-4 flex-1 min-w-0">
+                    <div className="flex-shrink-0 mt-0.5">
+                      {getStatusIcon(service.currentStatus)}
                     </div>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {service.url}
-                    </p>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-medium">{service.name}</span>
+                        <Badge variant="outline" className="text-xs">
+                          {service.type}
+                        </Badge>
+                      </div>
+                      <a
+                        href={service.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 hover:underline mt-1 inline-block break-all"
+                        title={service.url}
+                      >
+                        {service.url}
+                      </a>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4 justify-between sm:justify-end flex-shrink-0">
+                    <div className="text-left sm:text-right">
+                      <p
+                        className={`text-sm font-medium ${getStatusColor(service.currentStatus)}`}
+                      >
+                        {getStatusLabel(service.currentStatus)}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Checked{" "}
+                        {now > 0
+                          ? formatRelativeTime(service.lastCheckedAt, now)
+                          : "..."}
+                      </p>
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-4">
-                  <div className="text-right">
-                    <p
-                      className={`text-sm font-medium ${getStatusColor(service.currentStatus)}`}
-                    >
-                      {getStatusLabel(service.currentStatus)}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      Checked{" "}
-                      {now > 0
-                        ? formatRelativeTime(service.lastCheckedAt, now)
-                        : "..."}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
 
