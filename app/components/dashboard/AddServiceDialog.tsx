@@ -46,6 +46,7 @@ export function AddServiceDialog({
   const [description, setDescription] = useState(
     editService?.description || "",
   );
+  const [isActive, setIsActive] = useState(editService?.isActive ?? true);
 
   useEffect(() => {
     if (open) {
@@ -53,6 +54,7 @@ export function AddServiceDialog({
       setUrl(editService?.url || "");
       setType(editService?.type || "frontend");
       setDescription(editService?.description || "");
+      setIsActive(editService?.isActive ?? true);
     }
   }, [open, editService]);
 
@@ -64,6 +66,7 @@ export function AddServiceDialog({
       url,
       type,
       description,
+      isActive,
     });
 
     if (!editService) {
@@ -72,6 +75,7 @@ export function AddServiceDialog({
       setUrl("");
       setType("frontend");
       setDescription("");
+      setIsActive(true);
     }
     onOpenChange(false);
   };
@@ -134,6 +138,24 @@ export function AddServiceDialog({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
+            />
+          </div>
+
+          <div className="flex items-center justify-between p-3 rounded-lg border bg-gray-50/50">
+            <div className="space-y-0.5">
+              <Label htmlFor="active-monitor" className="text-sm font-medium">
+                Active Monitoring
+              </Label>
+              <p className="text-xs text-gray-500">
+                Pings will be sent while active
+              </p>
+            </div>
+            <input
+              type="checkbox"
+              id="active-monitor"
+              checked={isActive}
+              onChange={(e) => setIsActive(e.target.checked)}
+              className="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-600 cursor-pointer"
             />
           </div>
         </div>

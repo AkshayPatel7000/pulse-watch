@@ -25,6 +25,7 @@ export interface Service {
     notifyOnCriticalOnly?: boolean; // Only alert on up↔down transitions
   };
   tenantId: string;
+  isActive?: boolean;
 }
 
 export interface User {

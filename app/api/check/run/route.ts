@@ -18,7 +18,9 @@ export async function POST(request: Request) {
     const org = searchParams.get("org");
 
     const db = await getDb();
-    const query = org ? { tenantId: org } : {};
+    const query = org
+      ? { tenantId: org, isActive: { $ne: false } }
+      : { isActive: { $ne: false } };
 
     const services = await db
       .collection<Service>("services")

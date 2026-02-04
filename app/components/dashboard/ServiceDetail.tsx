@@ -84,12 +84,14 @@ export function ServiceDetail({ service, onUpdate }: ServiceDetailProps) {
   const [notifyOnCriticalOnly, setNotifyOnCriticalOnly] = useState<boolean>(
     service.notificationSettings?.notifyOnCriticalOnly ?? false,
   );
+  const [isActive, setIsActive] = useState<boolean>(service.isActive ?? true);
   const [isSaving, setIsSaving] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [currentService, setCurrentService] = useState<Service>(service);
 
   useEffect(() => {
     setCurrentService(service);
+    setIsActive(service.isActive ?? true);
   }, [service]);
 
   useEffect(() => {
@@ -300,6 +302,7 @@ export function ServiceDetail({ service, onUpdate }: ServiceDetailProps) {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          isActive,
           notificationSettings: {
             emails: emailList,
             slackWebhook,
@@ -683,6 +686,22 @@ export function ServiceDetail({ service, onUpdate }: ServiceDetailProps) {
                 </div>
               </CardHeader>
               <CardContent className="space-y-6">
+                <div className="flex items-center justify-between p-3 rounded-lg border bg-blue-50/30 border-blue-100">
+                  <div className="flex-1">
+                    <Label className="text-base font-semibold text-blue-900">
+                      Active Monitoring
+                    </Label>
+                    <p className="text-xs text-blue-700 mt-1">
+                      Master switch for all checks and alerts
+                    </p>
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={isActive}
+                    onChange={(e) => setIsActive(e.target.checked)}
+                    className="h-5 w-5 rounded border-blue-300 text-blue-600 focus:ring-blue-600 cursor-pointer"
+                  />
+                </div>
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <Label className="text-base">Service Goes Down</Label>

@@ -279,6 +279,14 @@ export function DashboardOverview({
                         <Badge variant="outline" className="text-xs">
                           {service.type}
                         </Badge>
+                        {service.isActive === false && (
+                          <Badge
+                            variant="secondary"
+                            className="text-xs bg-gray-100 text-gray-600 border-gray-200"
+                          >
+                            Paused
+                          </Badge>
+                        )}
                       </div>
                       <a
                         href={service.url}
