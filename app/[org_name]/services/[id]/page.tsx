@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams } from "next/navigation";
 import { Service } from "@/app/lib/types";
 import { DashboardLayout } from "@/app/components/dashboard/DashboardLayout";
@@ -13,25 +13,26 @@ export default function ServiceDetailPage() {
   const [service, setService] = useState<Service | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchService = async () => {
-      try {
-        const response = await fetch(`/api/services/${id}?org=${orgName}`);
-        const data = await response.json();
-        setService(data);
-      } catch (error) {
-        console.error("Error fetching service:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (id && orgName) {
-      fetchService();
+  const fetchService = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`/api/services/${id}?org=${orgName}`);
+      const data = await response.json();
+      setService(data);
+    } catch (error) {
+      console.error("Error fetching service:", error);
+    } finally {
+      setLoading(false);
     }
   }, [id, orgName]);
 
-  if (loading) {
+  useEffect(() => {
+    if (id && orgName) {
+      fetchService();
+    }
+  }, [id, orgName, fetchService]);
+
+  if (loading && !service) {
     return (
       <DashboardLayout currentPage="services">
         <div className="flex flex-col items-center justify-center p-20 space-y-4">
@@ -56,7 +57,7 @@ export default function ServiceDetailPage() {
 
   return (
     <DashboardLayout currentPage="services">
-      <ServiceDetail service={service} />
+      <ServiceDetail service={service} onUpdate={fetchService} />
     </DashboardLayout>
   );
 }

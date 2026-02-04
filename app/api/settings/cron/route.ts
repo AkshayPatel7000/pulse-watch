@@ -21,30 +21,27 @@ export async function GET() {
       return NextResponse.json({ error: "Tenant not found" }, { status: 404 });
     }
 
-    let isConfigured = !!(tenant.cronApiKey && tenant.cronJobId);
-    let wasAutoHealed = false;
+    const isConfigured = !!(tenant.cronApiKey && tenant.cronJobId);
+    const wasAutoHealed = false;
 
     // Verify job existence if configured
     if (isConfigured) {
       try {
+        // Use default retry logic (3 retries with backoff)
         const job = await getCronJob(tenant.cronApiKey!, tenant.cronJobId!);
         if (!job) {
-          // Job was deleted externally, clean up DB
-          await db.collection("tenants").updateOne(
-            { slug: tenantSlug },
-            {
-              $unset: {
-                cronApiKey: "",
-                cronJobId: "",
-                cronInterval: "",
-              },
-            },
+          // Job was deleted externally or rate limited
+          // We'll be conservative and not auto-delete on null
+          console.warn(
+            "Cron job verification returned null - could be rate limiting or deleted job",
           );
-          isConfigured = false;
-          wasAutoHealed = true;
+          // Don't mark as auto-healed or unconfigured if we can't verify
         }
       } catch (e) {
-        console.error("Failed to verify cron job existence:", e);
+        const errorMessage = e instanceof Error ? e.message : String(e);
+        console.error("Failed to verify cron job existence:", errorMessage);
+        // Don't change configuration state if we can't verify
+        // This prevents false positives from rate limiting
       }
     }
 

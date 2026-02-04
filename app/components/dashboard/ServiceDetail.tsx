@@ -27,7 +27,9 @@ import {
   Mail,
   MessageSquare,
   Save,
+  Pencil,
 } from "lucide-react";
+import { AddServiceDialog } from "./AddServiceDialog";
 import {
   XAxis,
   YAxis,
@@ -52,9 +54,10 @@ import { toast } from "sonner";
 
 interface ServiceDetailProps {
   service: Service;
+  onUpdate?: () => void;
 }
 
-export function ServiceDetail({ service }: ServiceDetailProps) {
+export function ServiceDetail({ service, onUpdate }: ServiceDetailProps) {
   const router = useRouter();
   const [probeResults, setProbeResults] = useState<ProbeResult[]>([]);
   const [statusEvents, setStatusEvents] = useState<StatusEvent[]>([]);
@@ -82,6 +85,12 @@ export function ServiceDetail({ service }: ServiceDetailProps) {
     service.notificationSettings?.notifyOnCriticalOnly ?? false,
   );
   const [isSaving, setIsSaving] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [currentService, setCurrentService] = useState<Service>(service);
+
+  useEffect(() => {
+    setCurrentService(service);
+  }, [service]);
 
   useEffect(() => {
     // Update time asynchronously to avoid cascading render warning
@@ -246,6 +255,40 @@ export function ServiceDetail({ service }: ServiceDetailProps) {
     }
   };
 
+  const handleUpdateService = async (
+    updatedData: Omit<
+      Service,
+      "id" | "currentStatus" | "lastCheckedAt" | "tenantId"
+    >,
+  ) => {
+    setIsSaving(true);
+    try {
+      const response = await fetch(`/api/services/${service.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedData),
+      });
+
+      if (response.ok) {
+        const updatedService = await response.json();
+        setCurrentService(updatedService);
+        toast.success("Service updated successfully");
+        if (onUpdate) {
+          onUpdate();
+        } else {
+          router.refresh();
+        }
+      } else {
+        throw new Error("Failed to update service");
+      }
+    } catch (error) {
+      console.error("Error updating service:", error);
+      toast.error("Failed to update service");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const handleSaveAlerts = async () => {
     setIsSaving(true);
     try {
@@ -269,7 +312,10 @@ export function ServiceDetail({ service }: ServiceDetailProps) {
       });
 
       if (response.ok) {
+        const updatedService = await response.json();
+        setCurrentService(updatedService);
         toast.success("Alert settings updated successfully");
+        if (onUpdate) onUpdate();
       } else {
         throw new Error("Failed to save settings");
       }
@@ -301,23 +347,42 @@ export function ServiceDetail({ service }: ServiceDetailProps) {
           </Button>
           <div>
             <div className="flex items-center gap-3">
-              {getStatusIcon(service.currentStatus)}
-              <h2 className="text-2xl font-semibold">{service.name}</h2>
-              <Badge variant="outline">{service.type}</Badge>
+              {getStatusIcon(currentService.currentStatus)}
+              <h2 className="text-2xl font-semibold">{currentService.name}</h2>
+              <Badge variant="outline">{currentService.type}</Badge>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-gray-500 hover:text-blue-600"
+                onClick={() => setShowEditDialog(true)}
+              >
+                <Pencil className="w-4 h-4" />
+              </Button>
             </div>
-            <p className="text-gray-600 mt-1">{service.url}</p>
+            <p className="text-gray-600 mt-1">{currentService.url}</p>
           </div>
         </div>
         <div className="text-right">
-          <p className={`font-medium ${getStatusColor(service.currentStatus)}`}>
-            {getStatusLabel(service.currentStatus)}
+          <p
+            className={`font-medium ${getStatusColor(currentService.currentStatus)}`}
+          >
+            {getStatusLabel(currentService.currentStatus)}
           </p>
           <p className="text-sm text-gray-500">
             Last checked{" "}
-            {now > 0 ? formatRelativeTime(service.lastCheckedAt, now) : "..."}
+            {now > 0
+              ? formatRelativeTime(currentService.lastCheckedAt, now)
+              : "..."}
           </p>
         </div>
       </div>
+
+      <AddServiceDialog
+        open={showEditDialog}
+        onOpenChange={setShowEditDialog}
+        onSave={handleUpdateService}
+        editService={currentService}
+      />
 
       {/* Tabs */}
       <div className="flex border-b border-gray-200">

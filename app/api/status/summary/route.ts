@@ -46,27 +46,33 @@ export async function GET(request: Request) {
 
     // Check if cron is configured for this tenant
     const tenant = await db.collection("tenants").findOne({ slug: tenantId });
-    let cronConfigured = !!(tenant?.cronJobId && tenant?.cronApiKey);
+    const cronConfigured = !!(tenant?.cronJobId && tenant?.cronApiKey);
 
     if (cronConfigured) {
       try {
-        const job = await getCronJob(tenant!.cronApiKey!, tenant!.cronJobId!);
-        if (!job) {
-          // Job was deleted externally, clean up DB
-          await db.collection("tenants").updateOne(
-            { slug: tenantId },
-            {
-              $unset: {
-                cronApiKey: "",
-                cronJobId: "",
-                cronInterval: "",
-              },
-            },
+        // Skip retries on 429 to avoid blocking the summary endpoint
+        // If rate limited, we'll just assume cron is still configured
+        const job = await getCronJob(
+          tenant!.cronApiKey!,
+          tenant!.cronJobId!,
+          0, // No retries for summary endpoint
+          true, // Skip retry on 429
+        );
+
+        // Only clean up if we got a definitive response that job doesn't exist
+        // If we got null due to rate limiting, keep the configuration
+        if (job === null && tenant?.cronApiKey && tenant?.cronJobId) {
+          // Double-check: try to verify if this was a real deletion or just rate limiting
+          // by checking if we can still access the API at all
+          // For now, we'll be conservative and not delete on null response
+          console.warn(
+            "Cron job verification returned null - could be rate limiting or deleted job",
           );
-          cronConfigured = false;
         }
       } catch (e) {
-        console.error("Failed to verify cron job in summary:", e);
+        // Only log as warning since this is non-critical for summary
+        console.warn("Failed to verify cron job in summary:", e);
+        // Keep cronConfigured as true since we can't verify
       }
     }
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -47,6 +47,15 @@ export function AddServiceDialog({
     editService?.description || "",
   );
 
+  useEffect(() => {
+    if (open) {
+      setName(editService?.name || "");
+      setUrl(editService?.url || "");
+      setType(editService?.type || "frontend");
+      setDescription(editService?.description || "");
+    }
+  }, [open, editService]);
+
   const handleSave = () => {
     if (!name || !url) return;
 
@@ -57,11 +66,13 @@ export function AddServiceDialog({
       description,
     });
 
-    // Reset form
-    setName("");
-    setUrl("");
-    setType("frontend");
-    setDescription("");
+    if (!editService) {
+      // Reset form only if creating a new service
+      setName("");
+      setUrl("");
+      setType("frontend");
+      setDescription("");
+    }
     onOpenChange(false);
   };
 
@@ -73,8 +84,8 @@ export function AddServiceDialog({
             {editService ? "Edit Service" : "Add New Service"}
           </DialogTitle>
           <DialogDescription>
-            Configure a new service endpoint to monitor. We'll check it every 10
-            minutes from multiple regions.
+            Configure a new service endpoint to monitor. We&apos;ll check it
+            every 10 minutes from multiple regions.
           </DialogDescription>
         </DialogHeader>
 

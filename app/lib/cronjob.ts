@@ -1,5 +1,10 @@
 const CRON_JOB_API_URL = "https://api.cron-job.org";
 
+// Helper function to delay execution
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export function generateMinutesArray(interval: number): number[] {
   const minutes: number[] = [];
   for (let i = 0; i < 60; i += interval) {
@@ -8,37 +13,84 @@ export function generateMinutesArray(interval: number): number[] {
   return minutes;
 }
 
-export async function getCronJob(apiKey: string, jobId: number) {
-  const response = await fetch(`${CRON_JOB_API_URL}/jobs/${jobId}`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-    },
-  });
+export async function getCronJob(
+  apiKey: string,
+  jobId: number,
+  retries: number = 3,
+  skipRetryOn429: boolean = false,
+) {
+  let lastError: Error | null = null;
 
-  const text = await response.text();
-
-  if (!response.ok) {
-    let errorMessage = `Server error: ${response.status} ${response.statusText}`;
+  for (let attempt = 0; attempt <= retries; attempt++) {
     try {
-      if (text) {
-        const data = JSON.parse(text);
-        errorMessage = data.error || errorMessage;
+      const response = await fetch(`${CRON_JOB_API_URL}/jobs/${jobId}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+        },
+      });
+
+      const text = await response.text();
+
+      // Handle rate limiting (429)
+      if (response.status === 429) {
+        if (skipRetryOn429 || attempt === retries) {
+          // If we're skipping retries or on last attempt, return null instead of throwing
+          console.warn(
+            `Rate limited by cron-job.org API (429). ${skipRetryOn429 ? "Skipping retry." : "Max retries reached."}`,
+          );
+          return null;
+        }
+
+        // Exponential backoff: 1s, 2s, 4s
+        const backoffDelay = Math.pow(2, attempt) * 1000;
+        console.warn(
+          `Rate limited (429). Retrying in ${backoffDelay}ms... (Attempt ${attempt + 1}/${retries})`,
+        );
+        await delay(backoffDelay);
+        continue;
       }
-    } catch {
-      // Keep status text error
+
+      if (!response.ok) {
+        let errorMessage = `Server error: ${response.status} ${response.statusText}`;
+        try {
+          if (text) {
+            const data = JSON.parse(text);
+            errorMessage = data.error || errorMessage;
+          }
+        } catch {
+          // Keep status text error
+        }
+        throw new Error(errorMessage);
+      }
+
+      if (!text) return null;
+
+      try {
+        const data = JSON.parse(text);
+        return data.jobDetails;
+      } catch {
+        throw new Error("Invalid JSON response from cron-job.org");
+      }
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+
+      // If it's not a network error and we're not retrying, throw immediately
+      if (attempt === retries) {
+        throw lastError;
+      }
+
+      // For other errors, wait before retrying
+      const backoffDelay = Math.pow(2, attempt) * 1000;
+      console.warn(
+        `Error fetching cron job: ${lastError.message}. Retrying in ${backoffDelay}ms...`,
+      );
+      await delay(backoffDelay);
     }
-    throw new Error(errorMessage);
   }
 
-  if (!text) return null;
-
-  try {
-    const data = JSON.parse(text);
-    return data.jobDetails;
-  } catch {
-    throw new Error("Invalid JSON response from cron-job.org");
-  }
+  // This should never be reached, but TypeScript needs it
+  throw lastError || new Error("Failed to fetch cron job after retries");
 }
 
 export async function createCronJob(
