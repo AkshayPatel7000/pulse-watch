@@ -22,6 +22,7 @@ import {
 import {
   getStatusColor,
   getStatusLabel,
+  getStatusBadgeStyle,
   formatRelativeTime,
 } from "../../lib/utils";
 
@@ -124,8 +125,8 @@ export function DashboardOverview({
               </Badge>
               {service.isActive === false && (
                 <Badge
-                  variant="secondary"
-                  className="text-[10px] h-4 px-1.5 bg-gray-100 text-gray-600 border-gray-200 uppercase font-bold tracking-wider"
+                  variant="outline"
+                  className="text-[10px] h-4 px-1.5 bg-muted/50 text-muted-foreground border-muted uppercase font-bold tracking-wider"
                 >
                   Paused
                 </Badge>
@@ -317,7 +318,7 @@ export function DashboardOverview({
                   </h3>
                   <Badge
                     variant="destructive"
-                    className="ml-1 px-1.5 py-0 min-w-[20px] justify-center"
+                    className="ml-1 px-1.5 py-0 min-w-[20px] justify-center font-bold"
                   >
                     {
                       filteredServices.filter(
@@ -349,7 +350,10 @@ export function DashboardOverview({
                   </h3>
                   <Badge
                     variant="outline"
-                    className="ml-1 border-yellow-200 bg-yellow-50 text-yellow-700 font-bold px-1.5 py-0"
+                    className={
+                      getStatusBadgeStyle("degraded") +
+                      " ml-1 font-bold px-1.5 py-0 min-w-[20px] justify-center"
+                    }
                   >
                     {
                       filteredServices.filter(
@@ -383,7 +387,10 @@ export function DashboardOverview({
                   </h3>
                   <Badge
                     variant="outline"
-                    className="ml-1 border-green-200 bg-green-50 text-green-700 font-bold px-1.5 py-0"
+                    className={
+                      getStatusBadgeStyle("up") +
+                      " ml-1 font-bold px-1.5 py-0 min-w-[20px] justify-center"
+                    }
                   >
                     {
                       filteredServices.filter(
@@ -477,9 +484,10 @@ export function DashboardOverview({
                         </Badge>
                         <span className="text-muted-foreground">→</span>
                         <Badge
+                          variant="outline"
                           className={
-                            getStatusColor(event.newStatus) +
-                            " border-transparent font-bold text-[10px] px-1.5 py-0"
+                            getStatusBadgeStyle(event.newStatus) +
+                            " font-bold text-[10px] px-1.5 py-0"
                           }
                         >
                           {getStatusLabel(event.newStatus)}

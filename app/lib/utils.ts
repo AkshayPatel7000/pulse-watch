@@ -3,26 +3,39 @@ import { ServiceStatus, Region } from "./types";
 export function getStatusColor(status: ServiceStatus): string {
   switch (status) {
     case "up":
-      return "text-green-600";
+      return "text-green-600 dark:text-green-400";
     case "degraded":
-      return "text-yellow-600";
+      return "text-yellow-600 dark:text-yellow-400";
     case "down":
-      return "text-red-600";
+      return "text-red-600 dark:text-red-400";
     default:
-      return "text-gray-600";
+      return "text-gray-600 dark:text-gray-400";
   }
 }
 
 export function getStatusBgColor(status: ServiceStatus): string {
   switch (status) {
     case "up":
-      return "bg-green-100 border-green-300";
+      return "bg-green-100 border-green-300 dark:bg-green-950/30 dark:border-green-800";
     case "degraded":
-      return "bg-yellow-100 border-yellow-300";
+      return "bg-yellow-100 border-yellow-300 dark:bg-yellow-950/30 dark:border-yellow-800";
     case "down":
-      return "bg-red-100 border-red-300";
+      return "bg-red-100 border-red-300 dark:bg-red-950/30 dark:border-red-800";
     default:
-      return "bg-gray-100 border-gray-300";
+      return "bg-gray-100 border-gray-300 dark:bg-gray-950/30 dark:border-gray-800";
+  }
+}
+
+export function getStatusBadgeStyle(status: ServiceStatus): string {
+  switch (status) {
+    case "up":
+      return "bg-green-100 text-green-800 border-green-200 dark:bg-green-900/40 dark:text-green-300 dark:border-green-800";
+    case "degraded":
+      return "bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/40 dark:text-yellow-300 dark:border-yellow-800";
+    case "down":
+      return "bg-red-100 text-red-800 border-red-200 dark:bg-red-900/40 dark:text-red-300 dark:border-red-800";
+    default:
+      return "bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-900/40 dark:text-gray-300 dark:border-gray-800";
   }
 }
 

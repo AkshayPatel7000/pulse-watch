@@ -31,16 +31,20 @@ export async function POST() {
       }
     }
 
-    // Create Indexes as per PRD
+    // Create Indexes for efficient retrieval and cleanup
     await db
       .collection("probe_results")
       .createIndex({ serviceId: 1, startedAt: -1 });
-    await db
-      .collection("probe_results")
-      .createIndex({ startedAt: 1 }, { expireAfterSeconds: 14 * 24 * 60 * 60 }); // 14 days TTL
+
+    // Index for cleanup queries (startedAt < fiveDaysAgo)
+    await db.collection("probe_results").createIndex({ startedAt: 1 });
+
     await db
       .collection("status_events")
       .createIndex({ serviceId: 1, timestamp: -1 });
+
+    // Index for cleanup queries (timestamp < fiveDaysAgo)
+    await db.collection("status_events").createIndex({ timestamp: 1 });
 
     return NextResponse.json({
       success: true,

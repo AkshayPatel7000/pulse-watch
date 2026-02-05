@@ -42,6 +42,7 @@ import {
 import {
   getStatusColor,
   getStatusLabel,
+  getStatusBadgeStyle,
   formatRelativeTime,
   getRegionName,
   formatUptime,
@@ -540,13 +541,8 @@ export function ServiceDetail({ service, onUpdate }: ServiceDetailProps) {
                         </p>
                       </div>
                       <Badge
-                        variant={
-                          region.status === "up"
-                            ? "secondary"
-                            : region.status === "degraded"
-                              ? "default"
-                              : "destructive"
-                        }
+                        variant="outline"
+                        className={getStatusBadgeStyle(region.status)}
                       >
                         {getStatusLabel(region.status)}
                       </Badge>
