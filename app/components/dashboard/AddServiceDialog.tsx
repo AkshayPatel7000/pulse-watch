@@ -141,12 +141,12 @@ export function AddServiceDialog({
             />
           </div>
 
-          <div className="flex items-center justify-between p-3 rounded-lg border bg-gray-50/50">
+          <div className="flex items-center justify-between p-3 rounded-lg border bg-muted/30">
             <div className="space-y-0.5">
               <Label htmlFor="active-monitor" className="text-sm font-medium">
                 Active Monitoring
               </Label>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-muted-foreground">
                 Pings will be sent while active
               </p>
             </div>
@@ -155,7 +155,7 @@ export function AddServiceDialog({
               id="active-monitor"
               checked={isActive}
               onChange={(e) => setIsActive(e.target.checked)}
-              className="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-600 cursor-pointer"
+              className="h-5 w-5 rounded border-input bg-background text-primary focus:ring-ring focus:ring-offset-2 cursor-pointer transition-colors"
             />
           </div>
         </div>
