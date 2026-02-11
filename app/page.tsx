@@ -16,6 +16,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { AuthModal } from "./components/auth/AuthModal";
+import { User } from "@/app/lib/types";
 
 export default function LandingPage() {
   const { data: session, status } = useSession();
@@ -29,17 +30,6 @@ export default function LandingPage() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  useEffect(() => {
-    if (status === "authenticated") {
-      const user = session?.user as any;
-      if (user.onboarded) {
-        router.push(`/${user.tenantId}/dashboard`);
-      } else {
-        router.push("/onboarding");
-      }
-    }
-  }, [status, session, router]);
 
   return (
     <div className="flex flex-col min-h-screen bg-[#050505] text-white selection:bg-blue-500/30">
@@ -69,8 +59,8 @@ export default function LandingPage() {
           {status === "authenticated" ? (
             <Link
               href={
-                (session?.user as any).onboarded
-                  ? `/${(session?.user as any).tenantId}/dashboard`
+                (session?.user as User).onboarded
+                  ? `/${(session?.user as User).tenantId}/dashboard`
                   : "/onboarding"
               }
             >
@@ -131,7 +121,12 @@ export default function LandingPage() {
                 className="h-14 text-lg bg-blue-600 hover:bg-blue-700 sm:w-72"
                 onClick={() => {
                   if (status === "authenticated") {
-                    router.push("/onboarding");
+                    const user = session?.user as User;
+                    if (user?.onboarded) {
+                      router.push(`/${user.tenantId}/dashboard`);
+                    } else {
+                      router.push("/onboarding");
+                    }
                   } else {
                     setAuthMode("register");
                     setShowAuthModal(true);
@@ -309,7 +304,12 @@ export default function LandingPage() {
                 className="h-14 px-12 text-lg bg-white text-blue-600 hover:bg-blue-100 border-none relative z-10"
                 onClick={() => {
                   if (status === "authenticated") {
-                    router.push("/onboarding");
+                    const user = session?.user as User;
+                    if (user?.onboarded) {
+                      router.push(`/${user.tenantId}/dashboard`);
+                    } else {
+                      router.push("/onboarding");
+                    }
                   } else {
                     setAuthMode("register");
                     setShowAuthModal(true);

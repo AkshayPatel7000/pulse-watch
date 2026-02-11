@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { signIn, getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import {
   Dialog,
@@ -15,6 +15,7 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Activity, Mail, Lock, User, Loader2, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
+import { User as UserType } from "@/app/lib/types";
 
 interface AuthModalProps {
   open: boolean;
@@ -67,7 +68,19 @@ export function AuthModal({
         }
 
         toast.success("Logged in successfully!");
-        router.refresh();
+
+        // Fetch session to get user details for redirection
+        const session = await getSession();
+        const user = session?.user as UserType;
+
+        if (user) {
+          if (user.onboarded && user.tenantId) {
+            router.push(`/${user.tenantId}/dashboard`);
+          } else {
+            router.push("/onboarding");
+          }
+        }
+
         onOpenChange(false);
       }
     } catch (error: any) {

@@ -37,6 +37,7 @@ export interface User {
   role?: string;
   orgName?: string;
   tenantId?: string;
+  onboarded?: boolean;
 }
 
 export interface Tenant {
